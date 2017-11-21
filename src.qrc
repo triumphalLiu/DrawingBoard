@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/new/color">
+        <file>src/choose_color.png</file>
+        <file>src/circle.png</file>
+        <file>src/curve.png</file>
+        <file>src/ellipse.png</file>
+        <file>src/line.png</file>
+        <file>src/point.png</file>
+        <file>src/rect.png</file>
+        <file>src/filledrect.png</file>
+        <file>src/filledpoligon.png</file>
+        <file>src/poligon.png</file>
+        <file>src/pensize.png</file>
+    </qresource>
+</RCC>

@@ -9,7 +9,8 @@ QT       += opengl
 
 LIBS     += -lOpengl32 \
                -lglu32 \
-               -lglut
+               -lglut \
+                -lws2_32
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -44,3 +45,6 @@ win32: LIBS +=-L$$PWD/glut/-lglut32
 win32: LIBS +=-L$$PWD/glut/-lglut
 INCLUDEPATH += $$PWD/glut
 DEPENDPATH += $$PWD/glut
+
+RESOURCES += \
+    src.qrc
