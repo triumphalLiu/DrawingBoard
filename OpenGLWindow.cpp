@@ -348,7 +348,105 @@ void OpenGLWindow::drawPoligon()
 
 void OpenGLWindow::drawFilledPoligon()
 {
-    //Todo:扫描线算法
+    Edge *AET;
+    Edge *ET[height()];
+    int maxY = 0;
+    for(unsigned i = 0; i < tempPoints.size(); ++i)
+    {
+        if(tempPoints[i].second > maxY)
+            maxY = tempPoints[i].second; //找到最高点
+    }
+    for (int i = 0; i < maxY; i++)
+    {
+        ET[i] = new Edge;
+        ET[i]->next = NULL;
+    }
+    AET = new Edge;
+    AET->next = NULL;
+    for (unsigned i = 0; i<tempPoints.size(); i++) //写入边表
+    {
+        int x1 = tempPoints[i].first;
+        int x2 = tempPoints[(i + 1) % tempPoints.size()].first;
+        int y0 = tempPoints[(i - 1 + tempPoints.size()) % tempPoints.size()].second;
+        int y1 = tempPoints[i].second;
+        int y2 = tempPoints[(i + 1) % tempPoints.size()].second;
+        int y3 = tempPoints[(i + 2) % tempPoints.size()].second;
+        if (y1 == y2)
+            continue;
+        int ymin = y1 > y2 ? y2 : y1;
+        int ymax = y1 > y2 ? y1 : y2;
+        double x = y1 > y2 ? x2 : x1;
+        double dx = (x1 - x2) * 1.0f / (y1 - y2);
+        if (((y1 < y2) && (y1 > y0)) || ((y2 < y1) && (y2 > y3))) //奇点
+        {
+            ymin++;
+            x += dx;
+        }
+        Edge *p = new Edge;
+        p->ymax = ymax;
+        p->x = x;
+        p->dx = dx;
+        p->next = ET[ymin]->next;
+        ET[ymin]->next = p;
+    }
+
+    for (int i = 0; i < maxY; i++)
+    {
+        while (ET[i]->next)
+        {
+            Edge *pInsert = ET[i]->next;
+            Edge *p = AET;
+            while (p->next)
+            {
+                if (pInsert->x > p->next->x)
+                {
+                    p = p->next;
+                    continue;
+                }
+                if (pInsert->x == p->next->x && pInsert->dx > p->next->dx)
+                {
+                    p = p->next;
+                    continue;
+                }
+                break;
+            }
+            ET[i]->next = pInsert->next;
+            pInsert->next = p->next;
+            p->next = pInsert;
+      }
+
+      Edge *p = AET;
+      while (p->next && p->next->next)
+      {
+          for (int x = p->next->x; x < p->next->next->x; x++)
+          {
+              drawPoint(x, i);
+          }
+          p = p->next->next;
+      }
+
+      p = AET;
+      while (p->next)
+      {
+          if (p->next->ymax == i)
+          {
+              Edge *pDelete = p->next;
+              p->next = pDelete->next;
+              pDelete->next = NULL;
+              delete pDelete;
+          }
+          else
+              p = p->next;
+      }
+
+      p = AET;
+      while (p->next)
+      {
+          p->next->x += p->next->dx;
+          p = p->next;
+      }
+
+    }
 }
 
 void OpenGLWindow::saveToFile(char *filepath)

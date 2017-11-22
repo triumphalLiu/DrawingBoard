@@ -145,7 +145,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "另存为...", ".", ("文本文件(*.txt)"));
+    QString fileName = QFileDialog::getOpenFileName(this, "另存为...", ".", ("png图像文件(*.png)"));
     if(fileName.length() == 0) return;
     QByteArray bytearray = fileName.toLocal8Bit();
     char *temp = bytearray.data();
@@ -172,26 +172,29 @@ void MainWindow::on_PointSize_currentIndexChanged(int index)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    qDebug() << event->key();
-    if ((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_Z))
+    if ((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_Z)) //撤销
     {
         ui->openGLWidget->traceUndo();
     }
-    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_Y))
+    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_Y)) //恢复
     {
         ui->openGLWidget->traceRedo();
     }
-    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_W))
+    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_A)) //保存
     {
-        QMessageBox mb( "重建画布", "正在尝试重建画布，是否保存画布内容？",
-                QMessageBox::Information,
-                QMessageBox::Yes | QMessageBox::Default,
-                QMessageBox::No,
-                QMessageBox::Cancel | QMessageBox::Escape );
+        on_actionSave_triggered();
+    }
+    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_O)) //打开
+    {
+        on_actionOpen_triggered();
+    }
+    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_W)) //重建
+    {
+        QMessageBox mb( "重建画布", "正在尝试重建画布，是否保存画布内容？", QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape );
         mb.setButtonText( QMessageBox::Yes, "保存" );
         mb.setButtonText( QMessageBox::No, "不保存" );
         mb.setButtonText( QMessageBox::Cancel, "取消" );
-        switch( mb.exec() ) {
+        switch(mb.exec()) {
             case QMessageBox::Yes:
                 on_actionSave_triggered();
                 ui->openGLWidget->cleanPoints();

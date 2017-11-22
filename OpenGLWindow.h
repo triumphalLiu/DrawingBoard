@@ -18,6 +18,13 @@
 #include <cmath>
 #include <cstdlib>
 
+struct Edge{
+    int ymax;
+    double x;
+    double dx;
+    Edge *next;
+};
+
 struct Entity{
     double x;
     double y;
@@ -43,9 +50,9 @@ public:
     std::vector<Entity> trashPoints;
     std::vector<std::pair<double, double>> tempPoints;
 
-    void cleanTempPoints(){while(!tempPoints.empty()) tempPoints.pop_back();}
-    void cleanTrashPoints(){while(!trashPoints.empty()) trashPoints.pop_back();} //清除Redo轨迹
-    void cleanPoints(){while(!points.empty()) points.pop_back();}
+    void cleanTempPoints(){while(!tempPoints.empty()) {tempPoints.pop_back();}}
+    void cleanTrashPoints(){while(!trashPoints.empty()) {trashPoints.pop_back();}} //清除Redo轨迹
+    void cleanPoints(){while(!points.empty()) {points.pop_back();}}
 
     void debugPoints(){
         for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
