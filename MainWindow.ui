@@ -134,8 +134,8 @@
    <widget class="QPushButton" name="Rect">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>20</y>
+      <x>90</x>
+      <y>0</y>
       <width>21</width>
       <height>21</height>
      </rect>
@@ -160,8 +160,8 @@
    <widget class="QPushButton" name="Circle">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>20</y>
+      <x>170</x>
+      <y>0</y>
       <width>21</width>
       <height>21</height>
      </rect>
@@ -186,8 +186,8 @@
    <widget class="QPushButton" name="Ellipse">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>20</y>
+      <x>150</x>
+      <y>0</y>
       <width>21</width>
       <height>21</height>
      </rect>
@@ -238,7 +238,7 @@
    <widget class="QPushButton" name="Poligon">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>130</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -264,8 +264,8 @@
    <widget class="QPushButton" name="FilledPoligon">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>20</y>
+      <x>110</x>
+      <y>0</y>
       <width>21</width>
       <height>21</height>
      </rect>
@@ -303,7 +303,7 @@
      <bool>false</bool>
     </property>
     <property name="currentText">
-     <string>5</string>
+     <string>1</string>
     </property>
     <item>
      <property name="text">
@@ -406,6 +406,110 @@
      </property>
     </item>
    </widget>
+   <widget class="QPushButton" name="ChooseRect">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/rect.png</normaloff>:/new/color/src/rect.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ChoosePoligon">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/poligon.png</normaloff>:/new/color/src/poligon.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ChooseInvert">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/poligon.png</normaloff>:/new/color/src/poligon.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Move">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/poligon.png</normaloff>:/new/color/src/poligon.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -416,7 +520,7 @@
      <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>文件</string>
     </property>
@@ -425,7 +529,7 @@
     <addaction name="actionExit"/>
     <addaction name="actionCheck"/>
    </widget>
-   <widget class="QMenu" name="menu_2">
+   <widget class="QMenu" name="menuInsert">
     <property name="title">
      <string>插入</string>
     </property>
@@ -439,8 +543,18 @@
     <addaction name="drawPoligon"/>
     <addaction name="drawFilledPoligon"/>
    </widget>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
+   <widget class="QMenu" name="menuChoose">
+    <property name="title">
+     <string>选取区域</string>
+    </property>
+    <addaction name="chooseRect"/>
+    <addaction name="choosePologon"/>
+    <addaction name="separator"/>
+    <addaction name="chooseInvert"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuInsert"/>
+   <addaction name="menuChoose"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -506,6 +620,21 @@
   <action name="drawFilledPoligon">
    <property name="text">
     <string>填充多边形</string>
+   </property>
+  </action>
+  <action name="chooseRect">
+   <property name="text">
+    <string>矩形区域</string>
+   </property>
+  </action>
+  <action name="choosePologon">
+   <property name="text">
+    <string>多边形区域</string>
+   </property>
+  </action>
+  <action name="chooseInvert">
+   <property name="text">
+    <string>反选</string>
    </property>
   </action>
  </widget>

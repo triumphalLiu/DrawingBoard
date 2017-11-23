@@ -31,6 +31,7 @@ struct Entity{
     double color[3];
     unsigned size;
     unsigned pid;
+    bool chosen;
 };
 
 class OpenGLWindow : public QOpenGLWidget, protected QOpenGLFunctions
@@ -42,12 +43,16 @@ private:
     unsigned currentPointSize;
     double currentColor[3];
 
+    bool isLeftButtonPressed;
+    bool isChoosingPoints;
+
 public:
     OpenGLWindow(QWidget *parent = 0);
     ~OpenGLWindow();
 
     std::vector<Entity> points;
     std::vector<Entity> trashPoints;
+    //std::vector<Entity> chosenPoints;
     std::vector<std::pair<double, double>> tempPoints;
 
     void cleanTempPoints(){while(!tempPoints.empty()) {tempPoints.pop_back();}}
@@ -58,7 +63,10 @@ public:
         for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
             qDebug() << (*ite).x << (*ite).y << (*ite).color[0] << (*ite).color[1] << (*ite).color[2] << (*ite).size << (*ite).pid;
     }
+
     void changeMode(int m){currentMode = m;}
+    int getMode(){return currentMode;}
+
     void setCurrentColor(double r, double g, double b){currentColor[0] = r; currentColor[1] = g; currentColor[2] = b; glColor3d(r, g, b);}
     void setCurrentPointSize(int x){currentPointSize = x; glPointSize(currentPointSize);}
 
@@ -72,6 +80,20 @@ public:
     void drawPoligon();
     void drawFilledPoligon();
 
+    void chooseRect(double x1, double y1, double x2, double y2);
+    void choosePoligon();
+    void chooseCancel(){
+        for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+            (*ite).chosen = false;
+        isChoosingPoints = false;
+    }
+    bool isPointInPoligon(double x, double y);
+    void chooseInvert(){
+        for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+            (*ite).chosen = !((*ite).chosen);
+        update();
+    }
+
     void saveToFile(char *filepath);
     void openFile(char *filepath);
 
@@ -83,6 +105,8 @@ protected:
     void resizeGL(int width, int height);
     void paintGL();
     void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 };
 
 #endif // OPENGLWINDOW_H

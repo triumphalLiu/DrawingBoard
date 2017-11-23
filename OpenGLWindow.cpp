@@ -1,14 +1,15 @@
 #include "OpenGLWindow.h"
-
 OpenGLWindow::OpenGLWindow(QWidget *parent)
     :QOpenGLWidget(parent)
 {
-    currentMode = 0;
+    currentMode = -1;
     currentPointSize = 5;
     currentID = 0;
     currentColor[0] = 1;
     currentColor[1] = 0;
     currentColor[2] = 0;
+    isChoosingPoints = false;
+    setMouseTracking(false);//mouseMoveEvent only use when pressed down
 }
 
 OpenGLWindow::~OpenGLWindow()
@@ -28,7 +29,10 @@ void OpenGLWindow::paintGL()
 {
     for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
     {
-        glColor3d((*ite).color[0], (*ite).color[1], (*ite).color[2]);
+        if((*ite).chosen == false)
+            glColor3d((*ite).color[0], (*ite).color[1], (*ite).color[2]);
+        else
+            glColor3d(0, 0, 0);
         glPointSize((*ite).size);
         glBegin(GL_POINTS);
         glVertex3d((*ite).x, (*ite).y, 0);
@@ -50,12 +54,18 @@ void OpenGLWindow::resizeGL(int w, int h)
 
 void OpenGLWindow::mousePressEvent(QMouseEvent *event)
 {
+    cleanTrashPoints();
     int loc_x = event->localPos().x();
     int loc_y = this->size().height() - event->localPos().y();
-    if(event->button() == Qt::LeftButton && currentMode == 0) //point
+    if(event->button() == Qt::MiddleButton) //中键取消选定
     {
+        chooseCancel();
+        cleanTempPoints();
+    }
+    else if(event->button() == Qt::LeftButton && currentMode == 0) //point
+    {
+        isLeftButtonPressed = true;
         drawPoint(loc_x, loc_y);
-        currentID++;
     }
     else if(currentMode == 1) //line
     {
@@ -118,7 +128,7 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
             currentID++;
         }
     }
-    else if(currentMode == 5 || currentMode == 6) //rect
+    else if(currentMode == 5 || currentMode == 6 || currentMode == 9) //rect
     {
         if(event->button() == Qt::LeftButton && tempPoints.size() == 0)
         {
@@ -131,11 +141,16 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
                 drawRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
             else if(currentMode == 6)
                 drawFilledRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+            else if(currentMode == 9)
+            {
+                chooseRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                --currentID;
+            }
             cleanTempPoints();
             currentID++;
         }
     }
-    else if(currentMode == 7 || currentMode == 8) //poligon
+    else if(currentMode == 7 || currentMode == 8 || currentMode == 10) //poligon
     {
         if(event->button() == Qt::LeftButton)
             tempPoints.push_back(std::make_pair(loc_x, loc_y));
@@ -145,6 +160,11 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
                 drawPoligon();
             else if(currentMode == 8)
                 drawFilledPoligon();
+            else if(currentMode == 10)
+            {
+                choosePoligon();
+                --currentID;
+            }
             cleanTempPoints();
             currentID++;
         }
@@ -152,10 +172,79 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
     update();
 }
 
+void OpenGLWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    int loc_x = event->localPos().x();
+    int loc_y = this->size().height() - event->localPos().y();
+    if(isLeftButtonPressed && currentMode == 0) //point
+    {
+        drawPoint(loc_x, loc_y);
+    }
+    update();
+}
+
+void OpenGLWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton && currentMode == 0)
+    {
+        isLeftButtonPressed = false;
+        ++currentID;
+    }
+}
+
+void OpenGLWindow::chooseRect(double x1, double y1, double x2, double y2)
+{
+    if(isChoosingPoints)
+        chooseCancel();
+    double smallX = (x1 < x2) ? x1 : x2;
+    double bigX = (x1 < x2) ? x2 : x1;
+    double smallY = (y1 < y2) ? y1 : y2;
+    double bigY = (y1 < y2) ? y2 : y1;
+    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+    {
+        if((*ite).x >= smallX && (*ite).x <= bigX && (*ite).y >= smallY && (*ite).y <= bigY)
+        {
+            (*ite).chosen = true;
+            isChoosingPoints = true;
+        }
+    }
+}
+
+void OpenGLWindow::choosePoligon()
+{
+    if(isChoosingPoints)
+        chooseCancel();
+    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+    {
+        if(isPointInPoligon((*ite).x, (*ite).y))
+        {
+            (*ite).chosen = true;
+            isChoosingPoints = true;
+        }
+    }
+}
+
+bool OpenGLWindow::isPointInPoligon(double x, double y)
+{
+    int nextPoint = tempPoints.size() - 1 ;
+    int cross = 0;
+    for (unsigned lastPoint = 0; lastPoint < tempPoints.size(); lastPoint++) //遍历每一条边
+    {
+        double a = tempPoints[lastPoint].first;
+        double b = tempPoints[lastPoint].second;
+        double c = tempPoints[nextPoint].first;
+        double d = tempPoints[nextPoint].second;
+        if(((b < y && d >= y) || (d < y && b >= y)) //点在线段的两顶点之间
+                && ((y - b) / (d - b) * (c - a) < (x - a)))
+            cross++;
+        nextPoint = lastPoint;
+    }
+    return (cross % 2);
+}
+
 void OpenGLWindow::traceUndo()
 {
     if(points.size() == 0) return;
-    qDebug() << "Undo";
     currentID -= 1;
     std::vector<Entity>::iterator ite = points.end() - 1;
     while((*ite).pid == currentID)
@@ -172,7 +261,6 @@ void OpenGLWindow::traceUndo()
 void OpenGLWindow::traceRedo()
 {
     if(trashPoints.size() == 0) return;
-    qDebug() << "Redo";
     std::vector<Entity>::iterator ite = trashPoints.end() - 1;
     while((*ite).pid == currentID)
     {
@@ -188,7 +276,6 @@ void OpenGLWindow::traceRedo()
 
 void OpenGLWindow::drawPoint(double x, double y)
 {
-    cleanTrashPoints();
     Entity *newEntity = new Entity;
     newEntity->x = x;
     newEntity->y = y;
@@ -197,6 +284,7 @@ void OpenGLWindow::drawPoint(double x, double y)
     newEntity->color[2] = currentColor[2];
     newEntity->size = currentPointSize;
     newEntity->pid = currentID;
+    newEntity->chosen = false;
     points.push_back(*newEntity);
 }
 

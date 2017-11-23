@@ -5,6 +5,8 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QKeyEvent>
+#include <QMouseEvent>
 namespace Ui {
 class MainWindow;
 }
@@ -44,8 +46,19 @@ private slots:
     void on_FilledPoligon_clicked();
 
     void on_ButtonChooseColor_clicked();
-
     void on_PointSize_currentIndexChanged(int index);
+
+    void on_chooseRect_triggered();
+    void on_ChooseRect_clicked();
+
+    void on_choosePologon_triggered();
+    void on_ChoosePoligon_clicked();
+
+    void on_chooseInvert_triggered();
+
+    void on_ChooseInvert_clicked();
+
+    void on_Move_clicked();
 
 private:
     Ui::MainWindow *ui;

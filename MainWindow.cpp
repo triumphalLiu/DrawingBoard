@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->statusBar->setSizeGripEnabled(false);
-    ui->statusBar->showMessage(tr("就绪-画点"));
+    ui->statusBar->showMessage(tr("就绪-指针"));
 }
 
 MainWindow::~MainWindow()
@@ -206,4 +206,45 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
                 break;
         }
     }
+}
+
+void MainWindow::on_chooseRect_triggered()
+{
+    on_ChooseRect_clicked();
+}
+
+void MainWindow::on_ChooseRect_clicked()
+{
+    ui->openGLWidget->changeMode(9);
+    ui->openGLWidget->cleanTempPoints();
+    ui->statusBar->showMessage(tr("就绪-选取矩形区域"));
+}
+
+void MainWindow::on_choosePologon_triggered()
+{
+    on_ChoosePoligon_clicked();
+}
+
+void MainWindow::on_ChoosePoligon_clicked()
+{
+    ui->openGLWidget->changeMode(10);
+    ui->openGLWidget->cleanTempPoints();
+    ui->statusBar->showMessage(tr("就绪-选取多边形区域"));
+}
+
+void MainWindow::on_chooseInvert_triggered()
+{
+    on_ChooseInvert_clicked();
+}
+
+void MainWindow::on_ChooseInvert_clicked()
+{
+    ui->openGLWidget->chooseInvert();
+}
+
+void MainWindow::on_Move_clicked()
+{
+    ui->openGLWidget->changeMode(-1);
+    ui->openGLWidget->cleanTempPoints();
+    ui->statusBar->showMessage(tr("就绪-指针"));
 }
