@@ -32,8 +32,8 @@
      <rect>
       <x>470</x>
       <y>0</y>
-      <width>30</width>
-      <height>30</height>
+      <width>31</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -41,7 +41,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/choose_color.png</normaloff>:/new/color/src/choose_color.png</iconset>
+      <normaloff>:/new/color/src/Color.png</normaloff>:/new/color/src/Color.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -67,7 +67,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/point.png</normaloff>:/new/color/src/point.png</iconset>
+      <normaloff>:/new/color/src/drawPoint.png</normaloff>:/new/color/src/drawPoint.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -93,7 +93,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/line.png</normaloff>:/new/color/src/line.png</iconset>
+      <normaloff>:/new/color/src/drawLine.png</normaloff>:/new/color/src/drawLine.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -119,7 +119,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/curve.png</normaloff>:/new/color/src/curve.png</iconset>
+      <normaloff>:/new/color/src/drawCurve.png</normaloff>:/new/color/src/drawCurve.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -145,7 +145,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/rect.png</normaloff>:/new/color/src/rect.png</iconset>
+      <normaloff>:/new/color/src/drawRect.png</normaloff>:/new/color/src/drawRect.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -171,7 +171,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/circle.png</normaloff>:/new/color/src/circle.png</iconset>
+      <normaloff>:/new/color/src/drawCircle.png</normaloff>:/new/color/src/drawCircle.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -197,7 +197,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/ellipse.png</normaloff>:/new/color/src/ellipse.png</iconset>
+      <normaloff>:/new/color/src/drawEllipse.png</normaloff>:/new/color/src/drawEllipse.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -223,7 +223,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/filledrect.png</normaloff>:/new/color/src/filledrect.png</iconset>
+      <normaloff>:/new/color/src/drawFilledRect.png</normaloff>:/new/color/src/drawFilledRect.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -249,7 +249,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/poligon.png</normaloff>:/new/color/src/poligon.png</iconset>
+      <normaloff>:/new/color/src/drawPoligon.png</normaloff>:/new/color/src/drawPoligon.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -275,7 +275,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/filledpoligon.png</normaloff>:/new/color/src/filledpoligon.png</iconset>
+      <normaloff>:/new/color/src/drawFilledPoligon.png</normaloff>:/new/color/src/drawFilledPoligon.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -420,7 +420,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/rect.png</normaloff>:/new/color/src/rect.png</iconset>
+      <normaloff>:/new/color/src/ChooseRect.png</normaloff>:/new/color/src/ChooseRect.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -446,7 +446,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/poligon.png</normaloff>:/new/color/src/poligon.png</iconset>
+      <normaloff>:/new/color/src/ChoosePoligon.png</normaloff>:/new/color/src/ChoosePoligon.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -472,7 +472,7 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/poligon.png</normaloff>:/new/color/src/poligon.png</iconset>
+      <normaloff>:/new/color/src/ChooseInvert.png</normaloff>:/new/color/src/ChooseInvert.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -498,7 +498,59 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/poligon.png</normaloff>:/new/color/src/poligon.png</iconset>
+      <normaloff>:/new/color/src/Move.png</normaloff>:/new/color/src/Move.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Rotate">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/Rotate.png</normaloff>:/new/color/src/Rotate.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Zoom">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/Zoom.png</normaloff>:/new/color/src/Zoom.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -545,12 +597,16 @@
    </widget>
    <widget class="QMenu" name="menuChoose">
     <property name="title">
-     <string>选取区域</string>
+     <string>选择</string>
     </property>
     <addaction name="chooseRect"/>
     <addaction name="choosePologon"/>
     <addaction name="separator"/>
     <addaction name="chooseInvert"/>
+    <addaction name="separator"/>
+    <addaction name="move"/>
+    <addaction name="rotate"/>
+    <addaction name="zoom"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuInsert"/>
@@ -635,6 +691,21 @@
   <action name="chooseInvert">
    <property name="text">
     <string>反选</string>
+   </property>
+  </action>
+  <action name="move">
+   <property name="text">
+    <string>移动</string>
+   </property>
+  </action>
+  <action name="rotate">
+   <property name="text">
+    <string>旋转</string>
+   </property>
+  </action>
+  <action name="zoom">
+   <property name="text">
+    <string>缩放</string>
    </property>
   </action>
  </widget>

@@ -6,7 +6,7 @@ OpenGLWindow::OpenGLWindow(QWidget *parent)
     currentPointSize = 5;
     currentID = 0;
     currentColor[0] = 1;
-    currentColor[1] = 0;
+    currentColor[1] = 170/255;
     currentColor[2] = 0;
     isChoosingPoints = false;
     setMouseTracking(false);//mouseMoveEvent only use when pressed down
@@ -54,17 +54,25 @@ void OpenGLWindow::resizeGL(int w, int h)
 
 void OpenGLWindow::mousePressEvent(QMouseEvent *event)
 {
-    cleanTrashPoints();
-    int loc_x = event->localPos().x();
-    int loc_y = this->size().height() - event->localPos().y();
+    double loc_x = originX = event->localPos().x();
+    double loc_y = originY = this->size().height() - event->localPos().y();
     if(event->button() == Qt::MiddleButton) //中键取消选定
     {
         chooseCancel();
         cleanTempPoints();
     }
-    else if(event->button() == Qt::LeftButton && currentMode == 0) //point
+    else if(event->button() == Qt::LeftButton)
     {
+        cleanTrashPoints();
         isLeftButtonPressed = true;
+    }
+    else if(event->button() == Qt::RightButton)
+    {
+
+    }
+
+    if(event->button() == Qt::LeftButton && currentMode == 0) //point
+    {
         drawPoint(loc_x, loc_y);
     }
     else if(currentMode == 1) //line
@@ -169,6 +177,15 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
             currentID++;
         }
     }
+    else if(currentMode < 0) //Move Rotate Zoom
+    {
+        if(isNewChosen)
+        {
+            pickChosenPoints();
+            ++currentID; //选中后第一次移动才加
+            isNewChosen = false;
+        }
+    }
     update();
 }
 
@@ -185,11 +202,16 @@ void OpenGLWindow::mouseMoveEvent(QMouseEvent *event)
 
 void OpenGLWindow::mouseReleaseEvent(QMouseEvent *event)
 {
+    isLeftButtonPressed = false;
     if(event->button() == Qt::LeftButton && currentMode == 0)
     {
-        isLeftButtonPressed = false;
         ++currentID;
     }
+    else if(event->button() == Qt::LeftButton && currentMode == -1)
+    {
+        moveChosenZone(event->localPos().x() - originX, height() - event->localPos().y() - originY);
+    }
+    update();
 }
 
 void OpenGLWindow::chooseRect(double x1, double y1, double x2, double y2)
@@ -206,6 +228,7 @@ void OpenGLWindow::chooseRect(double x1, double y1, double x2, double y2)
         {
             (*ite).chosen = true;
             isChoosingPoints = true;
+            isNewChosen = true;
         }
     }
 }
@@ -220,6 +243,7 @@ void OpenGLWindow::choosePoligon()
         {
             (*ite).chosen = true;
             isChoosingPoints = true;
+            isNewChosen = true;
         }
     }
 }
@@ -242,6 +266,51 @@ bool OpenGLWindow::isPointInPoligon(double x, double y)
     return (cross % 2);
 }
 
+void OpenGLWindow::moveChosenZone(double offsetX, double offsetY)
+{
+    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+    {
+        if((*ite).chosen == true)
+        {
+            (*ite).x += offsetX;
+            (*ite).y += offsetY;
+        }
+    }
+}
+
+void OpenGLWindow::rotateChosenZone()
+{
+
+}
+
+void OpenGLWindow::zoomChosenZone()
+{
+
+}
+
+void OpenGLWindow::pickChosenPoints()
+{
+    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end();)
+    {
+        if((*ite).pid < currentID && (*ite).chosen == true)
+        {
+            Entity *tmp = new Entity;
+            tmp->chosen = true;
+            tmp->color[0] = (*ite).color[0];
+            tmp->color[1] = (*ite).color[1];
+            tmp->color[2] = (*ite).color[2];
+            tmp->size = (*ite).size;
+            tmp->x = (*ite).x;
+            tmp->y = (*ite).y;
+            tmp->pid = currentID;
+            chosenPoints.push_back(*ite);
+            points.erase(ite);
+            points.push_back(*tmp);
+        }
+        else ++ite;
+    }
+}
+
 void OpenGLWindow::traceUndo()
 {
     if(points.size() == 0) return;
@@ -255,12 +324,47 @@ void OpenGLWindow::traceUndo()
             ite = points.end() - 1;
         else break;
     }
+    for(std::vector<Entity>::iterator ite = chosenPoints.begin(); ite != chosenPoints.end(); ite++)
+    {
+        points.insert(points.begin() + getPosByPID((*ite).pid), *ite);
+    }
+    chooseCheck();
+    if(isChoosingPoints == true)
+    {
+        cleanChosenPoints();
+        isNewChosen = true;
+    }
     update();
+}
+
+unsigned OpenGLWindow::getPosByPID(unsigned id)
+{
+    if(points.size() == 0)
+        return 0;
+    if(id < points[0].pid)
+        return 0;
+    for(unsigned i = 1; i < points.size(); ++i)
+    {
+        if(id < points[i].pid)
+            return i;
+    }
+    return points.size();
 }
 
 void OpenGLWindow::traceRedo()
 {
     if(trashPoints.size() == 0) return;
+    if(isNewChosen)
+    {
+        pickChosenPoints();
+        isNewChosen = false;
+    }
+    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end();)
+    {
+        if((*ite).chosen == true)
+            points.erase(ite);
+        else ++ite;
+    }
     std::vector<Entity>::iterator ite = trashPoints.end() - 1;
     while((*ite).pid == currentID)
     {

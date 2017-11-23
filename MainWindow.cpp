@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->statusBar->setSizeGripEnabled(false);
-    ui->statusBar->showMessage(tr("就绪-指针"));
+    ui->statusBar->showMessage(tr("就绪-移动所选区域"));
 }
 
 MainWindow::~MainWindow()
@@ -246,5 +246,34 @@ void MainWindow::on_Move_clicked()
 {
     ui->openGLWidget->changeMode(-1);
     ui->openGLWidget->cleanTempPoints();
-    ui->statusBar->showMessage(tr("就绪-指针"));
+    ui->statusBar->showMessage(tr("就绪-移动所选区域"));
+}
+
+void MainWindow::on_move_triggered()
+{
+    on_Move_clicked();
+}
+
+void MainWindow::on_Rotate_clicked()
+{
+    ui->openGLWidget->changeMode(-2);
+    ui->openGLWidget->cleanTempPoints();
+    ui->statusBar->showMessage(tr("就绪-旋转所选区域"));
+}
+
+void MainWindow::on_rotate_triggered()
+{
+    on_Rotate_clicked();
+}
+
+void MainWindow::on_Zoom_clicked()
+{
+    ui->openGLWidget->changeMode(-3);
+    ui->openGLWidget->cleanTempPoints();
+    ui->statusBar->showMessage(tr("就绪-缩放所选区域"));
+}
+
+void MainWindow::on_zoom_triggered()
+{
+    on_Zoom_clicked();
 }

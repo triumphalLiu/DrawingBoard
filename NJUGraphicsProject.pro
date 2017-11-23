@@ -12,6 +12,8 @@ LIBS     += -lOpengl32 \
                -lglut \
                 -lws2_32
 
+QMAKE_CXXFLAGS_WARN_ON += -Wno-unknown-pragmas
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = NJUGraphicsProject

@@ -1,15 +1,20 @@
 <RCC>
     <qresource prefix="/new/color">
-        <file>src/choose_color.png</file>
-        <file>src/circle.png</file>
-        <file>src/curve.png</file>
-        <file>src/ellipse.png</file>
-        <file>src/line.png</file>
-        <file>src/point.png</file>
-        <file>src/rect.png</file>
-        <file>src/filledrect.png</file>
-        <file>src/filledpoligon.png</file>
-        <file>src/poligon.png</file>
-        <file>src/pensize.png</file>
+        <file>src/ChooseInvert.png</file>
+        <file>src/ChoosePoligon.png</file>
+        <file>src/ChooseRect.png</file>
+        <file>src/Color.png</file>
+        <file>src/drawCurve.png</file>
+        <file>src/drawFilledPoligon.png</file>
+        <file>src/drawLine.png</file>
+        <file>src/drawPoint.png</file>
+        <file>src/drawPoligon.png</file>
+        <file>src/drawRect.png</file>
+        <file>src/Move.png</file>
+        <file>src/Rotate.png</file>
+        <file>src/Zoom.png</file>
+        <file>src/drawCircle.png</file>
+        <file>src/drawEllipse.png</file>
+        <file>src/drawFilledRect.png</file>
     </qresource>
 </RCC>
