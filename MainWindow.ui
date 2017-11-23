@@ -562,6 +562,58 @@
      <string>Ctrl+S</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="Undo">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/undo.png</normaloff>:/new/color/src/undo.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Redo">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/redo.png</normaloff>:/new/color/src/redo.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -608,9 +660,17 @@
     <addaction name="rotate"/>
     <addaction name="zoom"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>编辑</string>
+    </property>
+    <addaction name="undo"/>
+    <addaction name="redo"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuInsert"/>
    <addaction name="menuChoose"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -706,6 +766,16 @@
   <action name="zoom">
    <property name="text">
     <string>缩放</string>
+   </property>
+  </action>
+  <action name="undo">
+   <property name="text">
+    <string>撤销</string>
+   </property>
+  </action>
+  <action name="redo">
+   <property name="text">
+    <string>恢复</string>
    </property>
   </action>
  </widget>

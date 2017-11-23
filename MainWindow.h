@@ -61,6 +61,13 @@ private slots:
     void on_ButtonChooseColor_clicked();
     void on_PointSize_currentIndexChanged(int index);
 
+    void on_Undo_clicked();
+    void on_Redo_clicked();
+
+    void on_undo_triggered();
+
+    void on_redo_triggered();
+
 private:
     Ui::MainWindow *ui;
 

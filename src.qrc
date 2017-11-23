@@ -16,5 +16,7 @@
         <file>src/drawCircle.png</file>
         <file>src/drawEllipse.png</file>
         <file>src/drawFilledRect.png</file>
+        <file>src/redo.png</file>
+        <file>src/undo.png</file>
     </qresource>
 </RCC>

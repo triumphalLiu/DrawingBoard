@@ -277,3 +277,23 @@ void MainWindow::on_zoom_triggered()
 {
     on_Zoom_clicked();
 }
+
+void MainWindow::on_Undo_clicked()
+{
+    ui->openGLWidget->traceUndo();
+}
+
+void MainWindow::on_Redo_clicked()
+{
+    ui->openGLWidget->traceRedo();
+}
+
+void MainWindow::on_undo_triggered()
+{
+    ui->openGLWidget->traceUndo();
+}
+
+void MainWindow::on_redo_triggered()
+{
+    ui->openGLWidget->traceRedo();
+}
