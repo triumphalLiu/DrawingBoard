@@ -75,6 +75,7 @@ public:
             delete points[points.size()-1];
             points.pop_back();
         }
+        currentID = 0;
     } //清空points
     void cleanChosenPoints(){
         while(chosenPoints.size() > 0)

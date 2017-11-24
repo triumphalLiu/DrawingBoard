@@ -565,7 +565,7 @@ void OpenGLWindow::pickChosenPoints()
             tmp->y = (*ite)->y;
             tmp->pid = currentID;
             chosenPoints.push_back(*ite);
-            points.erase(ite);
+            ite = points.erase(ite);
             points.push_back(tmp);
         }
         else ++ite;
