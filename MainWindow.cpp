@@ -177,9 +177,9 @@ void MainWindow::on_newPaint_triggered()
             on_actionSave_triggered();
         case QMessageBox::No:
             ui->openGLWidget->cleanPoints();
-            ui->openGLWidget->cleanChosenPoints();
             ui->openGLWidget->cleanTempPoints();
             ui->openGLWidget->cleanTrashPoints();
+            ui->openGLWidget->cleanChosenPoints();
             break;
         case QMessageBox::Cancel:
             break;

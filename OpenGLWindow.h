@@ -103,6 +103,7 @@ public:
 
     unsigned getPosByPID(unsigned id); //通过PID从points中
     int getMode(){return currentMode;} //获取画图模式
+    int getTrashPointsAmounts(); //获取TrashPoints的ID数量
     void setCurrentMode(int m){currentMode = m; cleanTempPoints(); isDrawPoligonJustNow = false;} //修改画图模式获取插入位置
     void setCurrentColor(double r, double g, double b){currentColor[0] = r; currentColor[1] = g; currentColor[2] = b; glColor3d(r, g, b);} //设置画笔颜色
     void setCurrentPointSize(int x){currentPointSize = x; glPointSize(currentPointSize);} //设置画笔粗细

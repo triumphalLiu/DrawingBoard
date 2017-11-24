@@ -585,14 +585,13 @@ void OpenGLWindow::traceUndo()
             ite = points.end() - 1;
         else break;
     }
-    for(std::vector<Entity*>::iterator ite = chosenPoints.begin(); ite != chosenPoints.end(); ite++)
-    {
-        points.insert(points.begin() + getPosByPID((*ite)->pid), *ite);
-    }
-    chooseCheck();
     if(isChoosingPoints == true)
     {
-        cleanChosenPoints();
+        for(std::vector<Entity*>::iterator ite = chosenPoints.begin(); ite != chosenPoints.end();)
+        {
+            points.insert(points.begin() + getPosByPID((*ite)->pid), *ite);
+            ite = chosenPoints.erase(ite);
+        }
         isNewChosen = true;
     }
     update();
@@ -612,20 +611,22 @@ unsigned OpenGLWindow::getPosByPID(unsigned id)
     return points.size();
 }
 
+int OpenGLWindow::getTrashPointsAmounts()
+{
+    int rtn = 0;
+    int cr = -1;
+    for(unsigned i = 0; i < trashPoints.size(); ++i)
+        if((int)(trashPoints[i]->pid) != cr)
+        {
+            rtn++;
+            cr = trashPoints[i]->pid;
+        }
+    return rtn;
+}
+
 void OpenGLWindow::traceRedo()
 {
     if(trashPoints.size() == 0) return;
-    if(isNewChosen)
-    {
-        pickChosenPoints();
-        isNewChosen = false;
-    }
-    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end();)
-    {
-        if((*ite)->chosen == true)
-            points.erase(ite);
-        else ++ite;
-    }
     std::vector<Entity*>::iterator ite = trashPoints.end() - 1;
     while((*ite)->pid == currentID)
     {
@@ -634,6 +635,19 @@ void OpenGLWindow::traceRedo()
         if(trashPoints.size() > 0)
             ite = trashPoints.end() - 1;
         else break;
+    }
+    if(getTrashPointsAmounts() == 0 && isChoosingPoints) //最后一步redo才用
+    {
+        for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end();)
+        {
+            if((*ite)->pid < currentID && (*ite)->chosen == true)
+            {
+                chosenPoints.push_back(*ite);
+                ite = points.erase(ite);
+            }
+            else ++ite;
+        }
+        isNewChosen = false;
     }
     currentID += 1;
     update();
