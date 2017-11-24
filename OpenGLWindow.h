@@ -43,47 +43,66 @@ private:
     unsigned currentPointSize; //当前画笔粗细
     double currentColor[3]; //当前画笔颜色
 
-    double originX;
-    double originY;
+    double originX; //记录鼠标起始点位置x
+    double originY; //记录鼠标起始点位置y
 
     bool isLeftButtonPressed; //左键是否被按下
+    bool isRightButtonPressed; //右键是否被按下
     bool isChoosingPoints; //是否正在选择区域
     bool isNewChosen; //是否新选择了一块区域
+    bool isDrawPoligonJustNow; //是否刚画了多边形
+
+    std::vector<Entity*> points; //画布上所有点的集合
+    std::vector<Entity*> trashPoints; //被撤销的点的集合
+    std::vector<Entity*> chosenPoints; //被选取点的集合
+    std::vector<std::pair<double, double>> tempPoints; //用户画图的顶点集合
 
 public:
     OpenGLWindow(QWidget *parent = 0);
     ~OpenGLWindow();
 
-    std::vector<Entity> points; //画布上所有点的集合
-    std::vector<Entity> trashPoints; //被撤销的点的集合
-    std::vector<Entity> chosenPoints; //被选取点的集合
-    std::vector<std::pair<double, double>> tempPoints; //用户画图的顶点集合
-
     void cleanTempPoints(){while(!tempPoints.empty()) {tempPoints.pop_back();}} //清空tempPoints
-    void cleanTrashPoints(){while(!trashPoints.empty()) {trashPoints.pop_back();}} //清空trashPoints 撤销后一旦开始画图即清空
-    void cleanPoints(){while(!points.empty()) {points.pop_back();}} //清空points
-    void cleanChosenPoints(){while(!chosenPoints.empty()){chosenPoints.pop_back();}} //清空chosenPoints 在chooseCancel中会被调用
+    void cleanTrashPoints(){
+        while(trashPoints.size() > 0)
+        {
+            delete trashPoints[trashPoints.size()-1];
+            trashPoints.pop_back();
+        }
+    } //清空trashPoints 撤销后一旦开始画图即清空
+    void cleanPoints(){
+        while(points.size() > 0)
+        {
+            delete points[points.size()-1];
+            points.pop_back();
+        }
+    } //清空points
+    void cleanChosenPoints(){
+        while(chosenPoints.size() > 0)
+        {
+            delete chosenPoints[chosenPoints.size()-1];
+            chosenPoints.pop_back();
+        }
+    } //清空chosenPoints 在chooseCancel中会被调用
 
     void debugPoints() //debug专用 输出画布上所有的点
     {
         qDebug() << "------------------Debug Begins!";
         qDebug() << currentID << isChoosingPoints << isNewChosen;
         qDebug() << "--this is points";
-        for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
-            qDebug() << (*ite).x << (*ite).y << (*ite).color[0] << (*ite).color[1] << (*ite).color[2] << (*ite).size << (*ite).pid << (*ite).chosen;
+        for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
+            qDebug() << (*ite)->x << (*ite)->y << (*ite)->color[0] << (*ite)->color[1] << (*ite)->color[2] << (*ite)->size << (*ite)->pid << (*ite)->chosen;
         qDebug() << "--this is ChosenPoints";
-        for(std::vector<Entity>::iterator ite = chosenPoints.begin(); ite != chosenPoints.end(); ite++)
-            qDebug() << (*ite).x << (*ite).y << (*ite).color[0] << (*ite).color[1] << (*ite).color[2] << (*ite).size << (*ite).pid << (*ite).chosen;
+        for(std::vector<Entity*>::iterator ite = chosenPoints.begin(); ite != chosenPoints.end(); ite++)
+            qDebug() << (*ite)->x << (*ite)->y << (*ite)->color[0] << (*ite)->color[1] << (*ite)->color[2] << (*ite)->size << (*ite)->pid << (*ite)->chosen;
         qDebug() << "--this is TrashPoints";
-        for(std::vector<Entity>::iterator ite = trashPoints.begin(); ite != trashPoints.end(); ite++)
-            qDebug() << (*ite).x << (*ite).y << (*ite).color[0] << (*ite).color[1] << (*ite).color[2] << (*ite).size << (*ite).pid << (*ite).chosen;
+        for(std::vector<Entity*>::iterator ite = trashPoints.begin(); ite != trashPoints.end(); ite++)
+            qDebug() << (*ite)->x << (*ite)->y << (*ite)->color[0] << (*ite)->color[1] << (*ite)->color[2] << (*ite)->size << (*ite)->pid << (*ite)->chosen;
         qDebug() << "------------------Debug End!";
     }
 
-    void changeMode(int m){currentMode = m;} //修改画图模式
+    unsigned getPosByPID(unsigned id); //通过PID从points中
     int getMode(){return currentMode;} //获取画图模式
-    unsigned getPosByPID(unsigned id); //通过PID从points中获取插入位置
-
+    void setCurrentMode(int m){currentMode = m; cleanTempPoints(); isDrawPoligonJustNow = false;} //修改画图模式获取插入位置
     void setCurrentColor(double r, double g, double b){currentColor[0] = r; currentColor[1] = g; currentColor[2] = b; glColor3d(r, g, b);} //设置画笔颜色
     void setCurrentPointSize(int x){currentPointSize = x; glPointSize(currentPointSize);} //设置画笔粗细
 
@@ -97,23 +116,25 @@ public:
     void drawPoligon(); //画多边形
     void drawFilledPoligon(); //画填充多边形
 
+    void editLine(double x1, double y1); //编辑直线
+
     void chooseRect(double x1, double y1, double x2, double y2); //选择一块矩形区域
     void choosePoligon(); //选择一块多边形区域
     bool isPointInPoligon(double x, double y); //判断点是否在tempPoint的顶点群组成的多边形内
     void chooseCancel() //取消选择
     {
-        for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
-            (*ite).chosen = false;
+        for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
+            (*ite)->chosen = false;
         isChoosingPoints = false;
         cleanChosenPoints();
         update();
     }
     void chooseInvert() //反向选择
     {
-        for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+        for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
         {
-            (*ite).chosen = !((*ite).chosen);
-            if((*ite).chosen == true)
+            (*ite)->chosen = !((*ite)->chosen);
+            if((*ite)->chosen == true)
             {
                 isChoosingPoints = true;
                 isNewChosen = true;
@@ -124,8 +145,8 @@ public:
     void chooseCheck() //检查是否还有选择的点
     {
         bool have = false;
-        for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
-            if((*ite).chosen == true)
+        for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
+            if((*ite)->chosen == true)
                 have = true;
         if(have)
             isChoosingPoints = true;

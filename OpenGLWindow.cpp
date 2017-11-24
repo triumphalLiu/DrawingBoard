@@ -27,15 +27,15 @@ void OpenGLWindow::initializeGL()
 
 void OpenGLWindow::paintGL()
 {
-    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
     {
-        if((*ite).chosen == false)
-            glColor3d((*ite).color[0], (*ite).color[1], (*ite).color[2]);
+        if((*ite)->chosen == false)
+            glColor3d((*ite)->color[0], (*ite)->color[1], (*ite)->color[2]);
         else
             glColor3d(0, 0, 0);
-        glPointSize((*ite).size);
+        glPointSize((*ite)->size);
         glBegin(GL_POINTS);
-        glVertex3d((*ite).x, (*ite).y, 0);
+        glVertex3d((*ite)->x, (*ite)->y, 0);
         glEnd();
     }
     glColor3d(currentColor[0], currentColor[1], currentColor[2]);
@@ -68,17 +68,20 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
     }
     else if(event->button() == Qt::RightButton)
     {
-
+        isRightButtonPressed = true;
     }
 
-    if(event->button() == Qt::LeftButton && currentMode == 0) //point
+    if(currentMode == 0) //point
     {
-        drawPoint(loc_x, loc_y);
+        if(event->button() == Qt::LeftButton)
+            drawPoint(loc_x, loc_y);
     }
-    else if(currentMode == 1) //line
+    else if(currentMode == 1) //line 左键单击选择两个点后自动画线 第二个点不松开可以移动 或画好后右键单击拖动也可修改第二个点的位置
     {
         if(event->button() == Qt::LeftButton)
         {
+            if(tempPoints.size() == 2)
+                cleanTempPoints();
             if(tempPoints.size() == 0)
             {
                 tempPoints.push_back(std::make_pair(loc_x, loc_y));
@@ -87,94 +90,194 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
             {
                 tempPoints.push_back(std::make_pair(loc_x, loc_y));
                 drawLine((*(tempPoints.begin())).first, (*(tempPoints.begin())).second, (*(++tempPoints.begin())).first, (*(++tempPoints.begin())).second);
-                cleanTempPoints();
+                currentID++;
+            }
+        }
+        else if(event->button() == Qt::RightButton)
+        {
+            if(tempPoints.size() == 2)
+            {
+                traceUndo();
+                cleanTrashPoints();
+                drawLine(tempPoints[0].first, tempPoints[0].second, loc_x, loc_y);
                 currentID++;
             }
         }
     }
-    else if(currentMode == 2) //cruve
+    else if(currentMode == 2) //cruve 左键单击选择四个点后自动画曲线 第四个点不松开可以移动 或画好后右键单击拖动也可修改第四个点的位置
     {
-        if(event->button() == Qt::LeftButton && tempPoints.size() < 3)
+        if(event->button() == Qt::LeftButton)
         {
-            tempPoints.push_back(std::make_pair(loc_x, loc_y));
-        }
-        else if(event->button() == Qt::LeftButton && tempPoints.size() == 3)
-        {
-            tempPoints.push_back(std::make_pair(loc_x, loc_y));
-            drawCruve();
-            cleanTempPoints();
-            currentID++;
-        }
-    }
-    else if(currentMode == 3) //circle
-    {
-        if(event->button() == Qt::LeftButton && tempPoints.size() == 0)
-        {
-            tempPoints.push_back(std::make_pair(loc_x, loc_y));
-        }
-        else if(event->button() == Qt::LeftButton && tempPoints.size() == 1)
-        {
-            double CircleRadius = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
-            drawCircle(tempPoints[0].first, tempPoints[0].second, CircleRadius);
-            cleanTempPoints();
-            currentID++;
-        }
-    }
-    else if(currentMode == 4) // ellipse
-    {
-        if(event->button() == Qt::LeftButton && tempPoints.size() < 2)
-        {
-            tempPoints.push_back(std::make_pair(loc_x, loc_y));
-        }
-        else if(event->button() == Qt::LeftButton && tempPoints.size() == 2)
-        {
-            tempPoints.push_back(std::make_pair(loc_x, loc_y));
-            double ra = sqrt(pow((tempPoints[1].first - tempPoints[0].first), 2) + pow((tempPoints[1].second - tempPoints[0].second), 2));
-            double rb = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
-            drawEllipse(tempPoints[0].first, tempPoints[0].second, ra, rb);
-            cleanTempPoints();
-            currentID++;
-        }
-    }
-    else if(currentMode == 5 || currentMode == 6 || currentMode == 9) //rect
-    {
-        if(event->button() == Qt::LeftButton && tempPoints.size() == 0)
-        {
-            tempPoints.push_back(std::make_pair(loc_x, loc_y));
-        }
-        else if(event->button() == Qt::LeftButton && tempPoints.size() == 1)
-        {
-            tempPoints.push_back(std::make_pair(loc_x, loc_y));
-            if(currentMode == 5)
-                drawRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
-            else if(currentMode == 6)
-                drawFilledRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
-            else if(currentMode == 9)
+            if(tempPoints.size() == 4)
+                cleanTempPoints();
+            if(tempPoints.size() < 3)
+                tempPoints.push_back(std::make_pair(loc_x, loc_y));
+            else if(tempPoints.size() == 3)
             {
-                chooseRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
-                --currentID;
+                tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                drawCruve();
+                currentID++;
             }
-            cleanTempPoints();
-            currentID++;
+        }
+        else if(event->button() == Qt::RightButton)
+        {
+            if(tempPoints.size() == 4)
+            {
+                traceUndo();
+                cleanTrashPoints();
+                tempPoints[3].first = loc_x;
+                tempPoints[3].second = loc_y;
+                drawCruve();
+                currentID++;
+            }
+        }
+    }
+    else if(currentMode == 3) //circle 左键单击选择圆心和圆上一点自动画圆 第二个点不松开可以移动 或画好后右键单击拖动也可修改圆上点的位置
+    {
+        if(event->button() == Qt::LeftButton)
+        {
+            if(tempPoints.size() == 2)
+                cleanTempPoints();
+            if(tempPoints.size() == 0)
+                tempPoints.push_back(std::make_pair(loc_x, loc_y));
+            else if(tempPoints.size() == 1)
+            {
+                tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                double CircleRadius = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+                drawCircle(tempPoints[0].first, tempPoints[0].second, CircleRadius);
+                currentID++;
+            }
+        }
+        else if(event->button() == Qt::RightButton)
+        {
+            if(tempPoints.size() == 2)
+            {
+                traceUndo();
+                cleanTrashPoints();
+                tempPoints[1].first = loc_x;
+                tempPoints[1].second = loc_y;
+                double CircleRadius = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+                drawCircle(tempPoints[0].first, tempPoints[0].second, CircleRadius);
+                currentID++;
+            }
+        }
+    }
+    else if(currentMode == 4) // ellipse 左键单击选择圆心和短轴（长轴）和长轴（短轴）自动画圆 第三个点不松开可以移动 或画好后右键单击拖动也可修改长轴（短轴）
+    {
+        if(event->button() == Qt::LeftButton)
+        {
+            if(tempPoints.size() == 3)
+                cleanTempPoints();
+            if(tempPoints.size() < 2)
+                tempPoints.push_back(std::make_pair(loc_x, loc_y));
+            else if(tempPoints.size() == 2)
+            {
+                tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                double ra = sqrt(pow((tempPoints[1].first - tempPoints[0].first), 2) + pow((tempPoints[1].second - tempPoints[0].second), 2));
+                double rb = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+                drawEllipse(tempPoints[0].first, tempPoints[0].second, ra, rb);
+                currentID++;
+            }
+        }
+        else if(event->button() == Qt::RightButton)
+        {
+            if(tempPoints.size() == 3)
+            {
+                traceUndo();
+                cleanTrashPoints();
+                tempPoints[2].first = loc_x;
+                tempPoints[2].second = loc_y;
+                double ra = sqrt(pow((tempPoints[1].first - tempPoints[0].first), 2) + pow((tempPoints[1].second - tempPoints[0].second), 2));
+                double rb = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+                drawEllipse(tempPoints[0].first, tempPoints[0].second, ra, rb);
+                currentID++;
+            }
+        }
+    }
+    else if(currentMode == 5 || currentMode == 6 || currentMode == 9) //rect 左键单击选择对角线两个点后自动画矩形 第二个点不松开可以移动 或画好后右键单击拖动也可修改第二个点的位置
+    {
+        if(event->button() == Qt::LeftButton)
+        {
+            if(tempPoints.size() == 2)
+                cleanTempPoints();
+            if(tempPoints.size() == 0)
+                tempPoints.push_back(std::make_pair(loc_x, loc_y));
+            else if(tempPoints.size() == 1)
+            {
+                tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                if(currentMode == 5)
+                    drawRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                else if(currentMode == 6)
+                    drawFilledRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                else if(currentMode == 9)
+                {
+                    chooseRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                    --currentID;
+                }
+                currentID++;
+            }
+        }
+        else if(event->button() == Qt::RightButton)
+        {
+            if(tempPoints.size() == 2)
+            {
+                traceUndo();
+                cleanTrashPoints();
+                tempPoints[1].first = loc_x;
+                tempPoints[1].second = loc_y;
+                if(currentMode == 5)
+                    drawRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                else if(currentMode == 6)
+                    drawFilledRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                currentID++;
+            }
         }
     }
     else if(currentMode == 7 || currentMode == 8 || currentMode == 10) //poligon
     {
         if(event->button() == Qt::LeftButton)
+        {
+            if(isDrawPoligonJustNow)
+            {
+                cleanTempPoints();
+                isDrawPoligonJustNow = false;
+            }
             tempPoints.push_back(std::make_pair(loc_x, loc_y));
+        }
         else if(event->button() == Qt::RightButton)
         {
-            if(currentMode == 7)
-                drawPoligon();
-            else if(currentMode == 8)
-                drawFilledPoligon();
-            else if(currentMode == 10)
+            if(isDrawPoligonJustNow)
             {
-                choosePoligon();
-                --currentID;
+                traceUndo();
+                cleanTrashPoints();
+                tempPoints[tempPoints.size()-1].first = loc_x;
+                tempPoints[tempPoints.size()-1].second = loc_y;
+                if(currentMode == 7)
+                    drawPoligon();
+                else if(currentMode == 8)
+                    drawFilledPoligon();
+                currentID++;
             }
-            cleanTempPoints();
-            currentID++;
+            else if(tempPoints.size() >= 3)
+            {
+                if(currentMode == 7 && isDrawPoligonJustNow == false)
+                {
+                    drawPoligon();
+                    currentID++;
+                    isDrawPoligonJustNow = true;
+                }
+                else if(currentMode == 8 && isDrawPoligonJustNow == false)
+                {
+                    drawFilledPoligon();
+                    currentID++;
+                    isDrawPoligonJustNow = true;
+                }
+                else if(currentMode == 10)
+                {
+                    choosePoligon();
+                    cleanTempPoints();
+                }
+            }
         }
     }
     else if(currentMode == -1) //Move
@@ -191,18 +294,106 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
 
 void OpenGLWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    int loc_x = event->localPos().x();
-    int loc_y = this->size().height() - event->localPos().y();
-    if(isLeftButtonPressed && currentMode == 0) //point
+    double loc_x = event->localPos().x();
+    double loc_y = this->size().height() - event->localPos().y();
+    if(currentMode == -1) //Move
     {
-        drawPoint(loc_x, loc_y);
+        if(isLeftButtonPressed)
+            moveChosenZone(event->localPos().x() - originX, height() - event->localPos().y() - originY);
     }
+    else if(currentMode == 0) //point
+    {
+        if(isLeftButtonPressed)
+            drawPoint(loc_x, loc_y);
+    }
+    else if(currentMode == 1) //line
+    {
+        if(tempPoints.size() == 2)
+        {
+            traceUndo();
+            cleanTrashPoints();
+            drawLine(tempPoints[0].first, tempPoints[0].second, loc_x, loc_y);
+            currentID++;
+        }
+    }
+    else if(currentMode == 2) //curve
+    {
+        if(tempPoints.size() == 4)
+        {
+            traceUndo();
+            cleanTrashPoints();
+            tempPoints[3].first = loc_x;
+            tempPoints[3].second = loc_y;
+            drawCruve();
+            currentID++;
+        }
+    }
+    else if(currentMode == 3) //circle
+    {
+        if(tempPoints.size() == 2)
+        {
+            traceUndo();
+            cleanTrashPoints();
+            tempPoints[1].first = loc_x;
+            tempPoints[1].second = loc_y;
+            double CircleRadius = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+            drawCircle(tempPoints[0].first, tempPoints[0].second, CircleRadius);
+            currentID++;
+        }
+    }
+    else if(currentMode == 4) //ellipse
+    {
+        if(tempPoints.size() == 3)
+        {
+            traceUndo();
+            cleanTrashPoints();
+            tempPoints[2].first = loc_x;
+            tempPoints[2].second = loc_y;
+            double ra = sqrt(pow((tempPoints[1].first - tempPoints[0].first), 2) + pow((tempPoints[1].second - tempPoints[0].second), 2));
+            double rb = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+            drawEllipse(tempPoints[0].first, tempPoints[0].second, ra, rb);
+            currentID++;
+        }
+    }
+    else if(currentMode == 5 || currentMode == 6) //rect
+    {
+        if(tempPoints.size() == 2)
+        {
+            traceUndo();
+            cleanTrashPoints();
+            tempPoints[1].first = loc_x;
+            tempPoints[1].second = loc_y;
+            if(currentMode == 5)
+                drawRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+            else if(currentMode == 6)
+                drawFilledRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+            currentID++;
+        }
+    }
+    else if(currentMode == 7 || currentMode == 8) //poligon
+    {
+        if(tempPoints.size() >= 3 && isDrawPoligonJustNow)
+        {
+            traceUndo();
+            cleanTrashPoints();
+            tempPoints[tempPoints.size()-1].first = loc_x;
+            tempPoints[tempPoints.size()-1].second = loc_y;
+            if(currentMode == 7)
+                drawPoligon();
+            else if(currentMode == 8)
+                drawFilledPoligon();
+            currentID++;
+        }
+    }
+    originX = loc_x;
+    originY = loc_y;
     update();
 }
 
 void OpenGLWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     isLeftButtonPressed = false;
+    isRightButtonPressed = false;
     if(event->button() == Qt::LeftButton && currentMode == 0)
     {
         ++currentID;
@@ -222,11 +413,11 @@ void OpenGLWindow::chooseRect(double x1, double y1, double x2, double y2)
     double bigX = (x1 < x2) ? x2 : x1;
     double smallY = (y1 < y2) ? y1 : y2;
     double bigY = (y1 < y2) ? y2 : y1;
-    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
     {
-        if((*ite).x >= smallX && (*ite).x <= bigX && (*ite).y >= smallY && (*ite).y <= bigY)
+        if((*ite)->x >= smallX && (*ite)->x <= bigX && (*ite)->y >= smallY && (*ite)->y <= bigY)
         {
-            (*ite).chosen = true;
+            (*ite)->chosen = true;
             isChoosingPoints = true;
             isNewChosen = true;
         }
@@ -237,11 +428,11 @@ void OpenGLWindow::choosePoligon()
 {
     if(isChoosingPoints)
         chooseCancel();
-    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
     {
-        if(isPointInPoligon((*ite).x, (*ite).y))
+        if(isPointInPoligon((*ite)->x, (*ite)->y))
         {
-            (*ite).chosen = true;
+            (*ite)->chosen = true;
             isChoosingPoints = true;
             isNewChosen = true;
         }
@@ -268,12 +459,12 @@ bool OpenGLWindow::isPointInPoligon(double x, double y)
 
 void OpenGLWindow::moveChosenZone(double offsetX, double offsetY)
 {
-    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end(); ite++)
+    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
     {
-        if((*ite).chosen == true)
+        if((*ite)->chosen == true)
         {
-            (*ite).x += offsetX;
-            (*ite).y += offsetY;
+            (*ite)->x += offsetX;
+            (*ite)->y += offsetY;
         }
     }
 }
@@ -290,16 +481,16 @@ void OpenGLWindow::rotateChosenZone(double angle)
     double left = width(), right = 0, top = 0, bottom = height();
     for(unsigned i = 0; i < points.size(); ++i)
     {
-        if(points[i].chosen == true)
+        if(points[i]->chosen == true)
         {
-            if(points[i].x < left)
-                left = points[i].x;
-            if(points[i].x > right)
-                right = points[i].x;
-            if(points[i].y > top)
-                top = points[i].y;
-            if(points[i].y < bottom)
-                bottom = points[i].y;
+            if(points[i]->x < left)
+                left = points[i]->x;
+            if(points[i]->x > right)
+                right = points[i]->x;
+            if(points[i]->y > top)
+                top = points[i]->y;
+            if(points[i]->y < bottom)
+                bottom = points[i]->y;
         }
     }
     double midx = (left+right)/2.0;
@@ -307,13 +498,13 @@ void OpenGLWindow::rotateChosenZone(double angle)
 
     for(unsigned i = 0; i < points.size(); ++i)
     {
-        if(points[i].chosen == true)
+        if(points[i]->chosen == true)
         {
-             double dis = sqrt(pow(points[i].x - midx, 2.0) + pow(points[i].y - midy, 2.0));
-             double ang = atan2(points[i].y - midy, points[i].x - midx);
+             double dis = sqrt(pow(points[i]->x - midx, 2.0) + pow(points[i]->y - midy, 2.0));
+             double ang = atan2(points[i]->y - midy, points[i]->x - midx);
              ang += ((-angle)/180.0)*3.141592653;
-             points[i].x = midx + dis * cos(-ang);
-             points[i].y = midy + dis * sin(ang);
+             points[i]->x = midx + dis * cos(-ang);
+             points[i]->y = midy + dis * sin(ang);
         }
     }
     update();
@@ -331,28 +522,28 @@ void OpenGLWindow::zoomChosenZone(double pix)
     double left = width(), right = 0, top = 0, bottom = height();
     for(unsigned i = 0; i < points.size(); ++i)
     {
-        if(points[i].chosen == true)
+        if(points[i]->chosen == true)
         {
-            if(points[i].x < left)
-                left = points[i].x;
-            if(points[i].x > right)
-                right = points[i].x;
-            if(points[i].y > top)
-                top = points[i].y;
-            if(points[i].y < bottom)
-                bottom = points[i].y;
+            if(points[i]->x < left)
+                left = points[i]->x;
+            if(points[i]->x > right)
+                right = points[i]->x;
+            if(points[i]->y > top)
+                top = points[i]->y;
+            if(points[i]->y < bottom)
+                bottom = points[i]->y;
         }
     }
     double midx = (left+right)/2.0;
     double midy = (top+bottom)/2.0;
     for(unsigned i = 0; i < points.size(); ++i)
     {
-        if(points[i].chosen == true)
+        if(points[i]->chosen == true)
         {
-             double dis = sqrt(pow(points[i].x - midx, 2.0) + pow(points[i].y - midy, 2.0)) * pix;
-             double ang = atan2(points[i].y - midy, points[i].x - midx);
-             points[i].x = midx + dis * cos(ang);
-             points[i].y = midy + dis * sin(ang);
+             double dis = sqrt(pow(points[i]->x - midx, 2.0) + pow(points[i]->y - midy, 2.0)) * pix;
+             double ang = atan2(points[i]->y - midy, points[i]->x - midx);
+             points[i]->x = midx + dis * cos(ang);
+             points[i]->y = midy + dis * sin(ang);
         }
     }
     update();
@@ -360,22 +551,22 @@ void OpenGLWindow::zoomChosenZone(double pix)
 
 void OpenGLWindow::pickChosenPoints()
 {
-    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end();)
+    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end();)
     {
-        if((*ite).pid < currentID && (*ite).chosen == true)
+        if((*ite)->pid < currentID && (*ite)->chosen == true)
         {
             Entity *tmp = new Entity;
             tmp->chosen = true;
-            tmp->color[0] = (*ite).color[0];
-            tmp->color[1] = (*ite).color[1];
-            tmp->color[2] = (*ite).color[2];
-            tmp->size = (*ite).size;
-            tmp->x = (*ite).x;
-            tmp->y = (*ite).y;
+            tmp->color[0] = (*ite)->color[0];
+            tmp->color[1] = (*ite)->color[1];
+            tmp->color[2] = (*ite)->color[2];
+            tmp->size = (*ite)->size;
+            tmp->x = (*ite)->x;
+            tmp->y = (*ite)->y;
             tmp->pid = currentID;
             chosenPoints.push_back(*ite);
             points.erase(ite);
-            points.push_back(*tmp);
+            points.push_back(tmp);
         }
         else ++ite;
     }
@@ -385,8 +576,8 @@ void OpenGLWindow::traceUndo()
 {
     if(points.size() == 0) return;
     currentID -= 1;
-    std::vector<Entity>::iterator ite = points.end() - 1;
-    while((*ite).pid == currentID)
+    std::vector<Entity*>::iterator ite = points.end() - 1;
+    while((*ite)->pid == currentID)
     {
         trashPoints.push_back(*ite);
         points.pop_back();
@@ -394,9 +585,9 @@ void OpenGLWindow::traceUndo()
             ite = points.end() - 1;
         else break;
     }
-    for(std::vector<Entity>::iterator ite = chosenPoints.begin(); ite != chosenPoints.end(); ite++)
+    for(std::vector<Entity*>::iterator ite = chosenPoints.begin(); ite != chosenPoints.end(); ite++)
     {
-        points.insert(points.begin() + getPosByPID((*ite).pid), *ite);
+        points.insert(points.begin() + getPosByPID((*ite)->pid), *ite);
     }
     chooseCheck();
     if(isChoosingPoints == true)
@@ -411,11 +602,11 @@ unsigned OpenGLWindow::getPosByPID(unsigned id)
 {
     if(points.size() == 0)
         return 0;
-    if(id < points[0].pid)
+    if(id < points[0]->pid)
         return 0;
     for(unsigned i = 1; i < points.size(); ++i)
     {
-        if(id < points[i].pid)
+        if(id < points[i]->pid)
             return i;
     }
     return points.size();
@@ -429,14 +620,14 @@ void OpenGLWindow::traceRedo()
         pickChosenPoints();
         isNewChosen = false;
     }
-    for(std::vector<Entity>::iterator ite = points.begin(); ite != points.end();)
+    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end();)
     {
-        if((*ite).chosen == true)
+        if((*ite)->chosen == true)
             points.erase(ite);
         else ++ite;
     }
-    std::vector<Entity>::iterator ite = trashPoints.end() - 1;
-    while((*ite).pid == currentID)
+    std::vector<Entity*>::iterator ite = trashPoints.end() - 1;
+    while((*ite)->pid == currentID)
     {
         points.push_back(*ite);
         trashPoints.pop_back();
@@ -459,7 +650,7 @@ void OpenGLWindow::drawPoint(double x, double y)
     newEntity->size = currentPointSize;
     newEntity->pid = currentID;
     newEntity->chosen = false;
-    points.push_back(*newEntity);
+    points.push_back(newEntity);
 }
 
 void OpenGLWindow::drawLine(double x1, double y1, double x2, double y2)

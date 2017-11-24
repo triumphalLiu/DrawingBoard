@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>DrawingBoard</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="src.qrc">
+    <normaloff>:/new/color/src/Main.png</normaloff>:/new/color/src/Main.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="OpenGLWindow" name="openGLWidget">
@@ -632,20 +636,19 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionExit"/>
-    <addaction name="actionCheck"/>
    </widget>
    <widget class="QMenu" name="menuInsert">
     <property name="title">
      <string>插入</string>
     </property>
-    <addaction name="drawLine"/>
     <addaction name="drawPoint"/>
+    <addaction name="drawLine"/>
     <addaction name="drawCurve"/>
     <addaction name="drawCircle"/>
     <addaction name="drawEllipse"/>
     <addaction name="drawRect"/>
-    <addaction name="drawFilledRect"/>
     <addaction name="drawPoligon"/>
+    <addaction name="drawFilledRect"/>
     <addaction name="drawFilledPoligon"/>
    </widget>
    <widget class="QMenu" name="menuChoose">
@@ -661,17 +664,25 @@
     <addaction name="rotate"/>
     <addaction name="zoom"/>
    </widget>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>编辑</string>
     </property>
     <addaction name="undo"/>
     <addaction name="redo"/>
    </widget>
+   <widget class="QMenu" name="menuDeveloperTool">
+    <property name="title">
+     <string>开发者工具</string>
+    </property>
+    <addaction name="actionCheck"/>
+    <addaction name="actionViewCode"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuInsert"/>
    <addaction name="menuChoose"/>
-   <addaction name="menu"/>
+   <addaction name="menuDeveloperTool"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
@@ -782,6 +793,11 @@
   <action name="newPaint">
    <property name="text">
     <string>新建</string>
+   </property>
+  </action>
+  <action name="actionViewCode">
+   <property name="text">
+    <string>查看源代码</string>
    </property>
   </action>
  </widget>

@@ -18,5 +18,6 @@
         <file>src/drawFilledRect.png</file>
         <file>src/redo.png</file>
         <file>src/undo.png</file>
+        <file>src/Main.png</file>
     </qresource>
 </RCC>

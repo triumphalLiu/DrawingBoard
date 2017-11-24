@@ -71,6 +71,8 @@ private slots:
 
     void on_newPaint_triggered();
 
+    void on_actionViewCode_triggered();
+
 private:
     Ui::MainWindow *ui;
 

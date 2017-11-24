@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setFixedSize(this->width(), this->height());
     ui->statusBar->setSizeGripEnabled(false);
     ui->statusBar->showMessage(tr("就绪-移动所选区域"));
 }
@@ -22,63 +23,63 @@ void MainWindow::on_actionCheck_triggered()
 
 void MainWindow::on_drawPoint_triggered()
 {
-    ui->openGLWidget->changeMode(0);
+    ui->openGLWidget->setCurrentMode(0);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-画点"));
 }
 
 void MainWindow::on_drawLine_triggered()
 {
-    ui->openGLWidget->changeMode(1);
+    ui->openGLWidget->setCurrentMode(1);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-画线"));
 }
 
 void MainWindow::on_drawCurve_triggered()
 {
-    ui->openGLWidget->changeMode(2);
+    ui->openGLWidget->setCurrentMode(2);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-画曲线"));
 }
 
 void MainWindow::on_drawCircle_triggered()
 {
-    ui->openGLWidget->changeMode(3);
+    ui->openGLWidget->setCurrentMode(3);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-画圆"));
 }
 
 void MainWindow::on_drawEllipse_triggered()
 {
-    ui->openGLWidget->changeMode(4);
+    ui->openGLWidget->setCurrentMode(4);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-画椭圆"));
 }
 
 void MainWindow::on_drawRect_triggered()
 {
-    ui->openGLWidget->changeMode(5);
+    ui->openGLWidget->setCurrentMode(5);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-画矩形"));
 }
 
 void MainWindow::on_drawFilledRect_triggered()
 {
-    ui->openGLWidget->changeMode(6);
+    ui->openGLWidget->setCurrentMode(6);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-填充矩形"));
 }
 
 void MainWindow::on_drawPoligon_triggered()
 {
-    ui->openGLWidget->changeMode(7);
+    ui->openGLWidget->setCurrentMode(7);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-多边形"));
 }
 
 void MainWindow::on_drawFilledPoligon_triggered()
 {
-    ui->openGLWidget->changeMode(8);
+    ui->openGLWidget->setCurrentMode(8);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-填充多边形"));
 }
@@ -221,7 +222,7 @@ void MainWindow::on_chooseRect_triggered()
 
 void MainWindow::on_ChooseRect_clicked()
 {
-    ui->openGLWidget->changeMode(9);
+    ui->openGLWidget->setCurrentMode(9);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-选取矩形区域"));
 }
@@ -233,7 +234,7 @@ void MainWindow::on_choosePologon_triggered()
 
 void MainWindow::on_ChoosePoligon_clicked()
 {
-    ui->openGLWidget->changeMode(10);
+    ui->openGLWidget->setCurrentMode(10);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-选取多边形区域"));
 }
@@ -250,7 +251,7 @@ void MainWindow::on_ChooseInvert_clicked()
 
 void MainWindow::on_Move_clicked()
 {
-    ui->openGLWidget->changeMode(-1);
+    ui->openGLWidget->setCurrentMode(-1);
     ui->openGLWidget->cleanTempPoints();
     ui->statusBar->showMessage(tr("就绪-移动所选区域"));
 }
@@ -310,4 +311,10 @@ void MainWindow::on_undo_triggered()
 void MainWindow::on_redo_triggered()
 {
     ui->openGLWidget->traceRedo();
+}
+
+void MainWindow::on_actionViewCode_triggered()
+{
+    ShellExecute(NULL, TEXT("open"), TEXT("https://github.com/triumphalLiu/DrawingBoard"),
+        NULL, NULL, SW_MINIMIZE);
 }
