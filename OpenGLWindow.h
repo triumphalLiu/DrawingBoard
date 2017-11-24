@@ -137,8 +137,8 @@ public:
     }
 
     void moveChosenZone(double offsetX, double offsetY); //移动所选区域
-    void rotateChosenZone(); //旋转所选区域 TODO
-    void zoomChosenZone(); //缩放所选区域 TODO
+    void rotateChosenZone(double angle); //旋转所选区域
+    void zoomChosenZone(double pix); //缩放所选区域
     void pickChosenPoints(); //从points中提取出被选中的点
 
     void saveToFile(char *filepath); //将画布内容保存到文件 TODO

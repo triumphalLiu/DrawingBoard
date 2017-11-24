@@ -177,7 +177,7 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
             currentID++;
         }
     }
-    else if(currentMode < 0) //Move Rotate Zoom
+    else if(currentMode == -1) //Move
     {
         if(isNewChosen)
         {
@@ -278,14 +278,84 @@ void OpenGLWindow::moveChosenZone(double offsetX, double offsetY)
     }
 }
 
-void OpenGLWindow::rotateChosenZone()
+void OpenGLWindow::rotateChosenZone(double angle)
 {
+    if(isChoosingPoints == false) return;
+    if(isNewChosen)
+    {
+        pickChosenPoints();
+        ++currentID;
+        isNewChosen = false;
+    }
+    double left = width(), right = 0, top = 0, bottom = height();
+    for(unsigned i = 0; i < points.size(); ++i)
+    {
+        if(points[i].chosen == true)
+        {
+            if(points[i].x < left)
+                left = points[i].x;
+            if(points[i].x > right)
+                right = points[i].x;
+            if(points[i].y > top)
+                top = points[i].y;
+            if(points[i].y < bottom)
+                bottom = points[i].y;
+        }
+    }
+    double midx = (left+right)/2.0;
+    double midy = (top+bottom)/2.0;
 
+    for(unsigned i = 0; i < points.size(); ++i)
+    {
+        if(points[i].chosen == true)
+        {
+             double dis = sqrt(pow(points[i].x - midx, 2.0) + pow(points[i].y - midy, 2.0));
+             double ang = atan2(points[i].y - midy, points[i].x - midx);
+             ang += ((-angle)/180.0)*3.141592653;
+             points[i].x = midx + dis * cos(-ang);
+             points[i].y = midy + dis * sin(ang);
+        }
+    }
+    update();
 }
 
-void OpenGLWindow::zoomChosenZone()
+void OpenGLWindow::zoomChosenZone(double pix)
 {
-
+    if(isChoosingPoints == false) return;
+    if(isNewChosen)
+    {
+        pickChosenPoints();
+        ++currentID;
+        isNewChosen = false;
+    }
+    double left = width(), right = 0, top = 0, bottom = height();
+    for(unsigned i = 0; i < points.size(); ++i)
+    {
+        if(points[i].chosen == true)
+        {
+            if(points[i].x < left)
+                left = points[i].x;
+            if(points[i].x > right)
+                right = points[i].x;
+            if(points[i].y > top)
+                top = points[i].y;
+            if(points[i].y < bottom)
+                bottom = points[i].y;
+        }
+    }
+    double midx = (left+right)/2.0;
+    double midy = (top+bottom)/2.0;
+    for(unsigned i = 0; i < points.size(); ++i)
+    {
+        if(points[i].chosen == true)
+        {
+             double dis = sqrt(pow(points[i].x - midx, 2.0) + pow(points[i].y - midy, 2.0)) * pix;
+             double ang = atan2(points[i].y - midy, points[i].x - midx);
+             points[i].x = midx + dis * cos(ang);
+             points[i].y = midy + dis * sin(ang);
+        }
+    }
+    update();
 }
 
 void OpenGLWindow::pickChosenPoints()

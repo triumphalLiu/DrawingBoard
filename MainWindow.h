@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QColorDialog>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -67,6 +68,8 @@ private slots:
     void on_undo_triggered();
 
     void on_redo_triggered();
+
+    void on_newPaint_triggered();
 
 private:
     Ui::MainWindow *ui;

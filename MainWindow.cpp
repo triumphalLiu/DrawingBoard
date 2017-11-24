@@ -165,6 +165,26 @@ void MainWindow::on_actionOpen_triggered()
     }
 }
 
+void MainWindow::on_newPaint_triggered()
+{
+    QMessageBox mb( "重建画布", "正在尝试重建画布，是否保存画布内容？", QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape );
+    mb.setButtonText( QMessageBox::Yes, "保存" );
+    mb.setButtonText( QMessageBox::No, "不保存" );
+    mb.setButtonText( QMessageBox::Cancel, "取消" );
+    switch(mb.exec()) {
+        case QMessageBox::Yes:
+            on_actionSave_triggered();
+        case QMessageBox::No:
+            ui->openGLWidget->cleanPoints();
+            ui->openGLWidget->cleanChosenPoints();
+            ui->openGLWidget->cleanTempPoints();
+            ui->openGLWidget->cleanTrashPoints();
+            break;
+        case QMessageBox::Cancel:
+            break;
+    }
+}
+
 void MainWindow::on_PointSize_currentIndexChanged(int index)
 {
     ui->openGLWidget->setCurrentPointSize(index+1);
@@ -190,21 +210,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
     }
     else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_W)) //重建
     {
-        QMessageBox mb( "重建画布", "正在尝试重建画布，是否保存画布内容？", QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape );
-        mb.setButtonText( QMessageBox::Yes, "保存" );
-        mb.setButtonText( QMessageBox::No, "不保存" );
-        mb.setButtonText( QMessageBox::Cancel, "取消" );
-        switch(mb.exec()) {
-            case QMessageBox::Yes:
-                on_actionSave_triggered();
-                ui->openGLWidget->cleanPoints();
-                break;
-            case QMessageBox::No:
-                ui->openGLWidget->cleanPoints();
-                break;
-            case QMessageBox::Cancel:
-                break;
-        }
+        on_newPaint_triggered();
     }
 }
 
@@ -256,9 +262,13 @@ void MainWindow::on_move_triggered()
 
 void MainWindow::on_Rotate_clicked()
 {
-    ui->openGLWidget->changeMode(-2);
-    ui->openGLWidget->cleanTempPoints();
-    ui->statusBar->showMessage(tr("就绪-旋转所选区域"));
+    QString text = QInputDialog::getText(NULL, tr("旋转所选区域"), tr("请输入旋转角度[-180°~180°]："));
+    if(text == NULL)
+        return;
+    double angle = text.toDouble();
+    if(angle < -180 || angle > 180)
+        QMessageBox::information(NULL, "数据非法", "旋转角度区间[-180°~180°]", QMessageBox::Ok, QMessageBox::Ok);
+    else ui->openGLWidget->rotateChosenZone(angle);
 }
 
 void MainWindow::on_rotate_triggered()
@@ -268,9 +278,13 @@ void MainWindow::on_rotate_triggered()
 
 void MainWindow::on_Zoom_clicked()
 {
-    ui->openGLWidget->changeMode(-3);
-    ui->openGLWidget->cleanTempPoints();
-    ui->statusBar->showMessage(tr("就绪-缩放所选区域"));
+    QString text = QInputDialog::getText(NULL, tr("缩放所选区域"), tr("请输入缩放倍数(0~1000](%)："));
+    if(text == NULL)
+        return;
+    double zoom = text.toDouble();
+    if(zoom <= 0 || zoom > 1000)
+        QMessageBox::information(NULL, "数据非法", "缩放区间(0~1000](%)", QMessageBox::Ok, QMessageBox::Ok);
+    else ui->openGLWidget->zoomChosenZone(zoom/100.0);
 }
 
 void MainWindow::on_zoom_triggered()

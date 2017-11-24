@@ -628,6 +628,7 @@
     <property name="title">
      <string>文件</string>
     </property>
+    <addaction name="newPaint"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionExit"/>
@@ -675,17 +676,17 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>打开</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>保存</string>
    </property>
   </action>
   <action name="actionExit">
    <property name="text">
-    <string>Exit</string>
+    <string>退出</string>
    </property>
   </action>
   <action name="drawLine">
@@ -776,6 +777,11 @@
   <action name="redo">
    <property name="text">
     <string>恢复</string>
+   </property>
+  </action>
+  <action name="newPaint">
+   <property name="text">
+    <string>新建</string>
    </property>
   </action>
  </widget>
