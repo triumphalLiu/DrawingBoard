@@ -73,6 +73,10 @@ private slots:
 
     void on_actionViewCode_triggered();
 
+    void on_Delete_clicked();
+
+    void on_deleteZone_triggered();
+
 private:
     Ui::MainWindow *ui;
 

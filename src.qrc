@@ -19,5 +19,6 @@
         <file>src/redo.png</file>
         <file>src/undo.png</file>
         <file>src/Main.png</file>
+        <file>src/deleteZone.png</file>
     </qresource>
 </RCC>

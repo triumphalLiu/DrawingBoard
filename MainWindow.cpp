@@ -318,3 +318,13 @@ void MainWindow::on_actionViewCode_triggered()
     ShellExecute(NULL, TEXT("open"), TEXT("https://github.com/triumphalLiu/DrawingBoard"),
         NULL, NULL, SW_MINIMIZE);
 }
+
+void MainWindow::on_Delete_clicked()
+{
+    ui->openGLWidget->deleteChosenZone();
+}
+
+void MainWindow::on_deleteZone_triggered()
+{
+    ui->openGLWidget->deleteChosenZone();
+}

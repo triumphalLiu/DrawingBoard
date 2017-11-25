@@ -34,7 +34,7 @@
    <widget class="QPushButton" name="ButtonChooseColor">
     <property name="geometry">
      <rect>
-      <x>470</x>
+      <x>510</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -294,7 +294,7 @@
    <widget class="QComboBox" name="PointSize">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>450</x>
       <y>0</y>
       <width>42</width>
       <height>22</height>
@@ -491,7 +491,7 @@
    <widget class="QPushButton" name="Move">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>290</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -517,7 +517,7 @@
    <widget class="QPushButton" name="Rotate">
     <property name="geometry">
      <rect>
-      <x>300</x>
+      <x>310</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -543,7 +543,7 @@
    <widget class="QPushButton" name="Zoom">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>330</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -569,7 +569,7 @@
    <widget class="QPushButton" name="Undo">
     <property name="geometry">
      <rect>
-      <x>350</x>
+      <x>390</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -595,7 +595,7 @@
    <widget class="QPushButton" name="Redo">
     <property name="geometry">
      <rect>
-      <x>370</x>
+      <x>410</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -607,6 +607,32 @@
     <property name="icon">
      <iconset resource="src.qrc">
       <normaloff>:/new/color/src/redo.png</normaloff>:/new/color/src/redo.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Delete">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/deleteZone.png</normaloff>:/new/color/src/deleteZone.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -663,6 +689,7 @@
     <addaction name="move"/>
     <addaction name="rotate"/>
     <addaction name="zoom"/>
+    <addaction name="deleteZone"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -798,6 +825,11 @@
   <action name="actionViewCode">
    <property name="text">
     <string>查看源代码</string>
+   </property>
+  </action>
+  <action name="deleteZone">
+   <property name="text">
+    <string>删除</string>
    </property>
   </action>
  </widget>

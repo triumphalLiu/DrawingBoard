@@ -549,6 +549,24 @@ void OpenGLWindow::zoomChosenZone(double pix)
     update();
 }
 
+void OpenGLWindow::deleteChosenZone()
+{
+    if(isChoosingPoints == false) return;
+    for(unsigned i = 0; i < points.size(); ++i)
+    {
+        if(points[i]->chosen == true)
+        {
+            delete points[i];
+            points.erase(points.begin()+i);
+            --i;
+        }
+    }
+    isChoosingPoints = false;
+    isNewChosen = false;
+    cleanChosenPoints();
+    update();
+}
+
 void OpenGLWindow::pickChosenPoints()
 {
     for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end();)
