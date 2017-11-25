@@ -61,30 +61,6 @@ public:
     OpenGLWindow(QWidget *parent = 0);
     ~OpenGLWindow();
 
-    void cleanTempPoints(){while(!tempPoints.empty()) {tempPoints.pop_back();}} //清空tempPoints
-    void cleanTrashPoints(){
-        while(trashPoints.size() > 0)
-        {
-            delete trashPoints[trashPoints.size()-1];
-            trashPoints.pop_back();
-        }
-    } //清空trashPoints 撤销后一旦开始画图即清空
-    void cleanPoints(){
-        while(points.size() > 0)
-        {
-            delete points[points.size()-1];
-            points.pop_back();
-        }
-        currentID = 0;
-    } //清空points
-    void cleanChosenPoints(){
-        while(chosenPoints.size() > 0)
-        {
-            delete chosenPoints[chosenPoints.size()-1];
-            chosenPoints.pop_back();
-        }
-    } //清空chosenPoints 在chooseCancel中会被调用
-
     void debugPoints() //debug专用 输出画布上所有的点
     {
         qDebug() << "------------------Debug Begins!";
@@ -101,9 +77,15 @@ public:
         qDebug() << "------------------Debug End!";
     }
 
+    void cleanTempPoints(){while(!tempPoints.empty()) {tempPoints.pop_back();}} //清空tempPoints
+    void cleanTrashPoints(){while(trashPoints.size() > 0){delete trashPoints[trashPoints.size()-1];trashPoints.pop_back();}} //清空trashPoints 撤销后一旦开始画图即清空
+    void cleanPoints(){while(points.size() > 0){delete points[points.size()-1];points.pop_back();}currentID = 0;} //清空points
+    void cleanChosenPoints(){while(chosenPoints.size() > 0){delete chosenPoints[chosenPoints.size()-1];chosenPoints.pop_back();}} //清空chosenPoints 在chooseCancel中会被调用
+
     unsigned getPosByPID(unsigned id); //通过PID从points中
     int getMode(){return currentMode;} //获取画图模式
     int getTrashPointsAmounts(); //获取TrashPoints的ID数量
+
     void setCurrentMode(int m){currentMode = m; cleanTempPoints(); isDrawPoligonJustNow = false;} //修改画图模式获取插入位置
     void setCurrentColor(double r, double g, double b){currentColor[0] = r; currentColor[1] = g; currentColor[2] = b; glColor3d(r, g, b);} //设置画笔颜色
     void setCurrentPointSize(int x){currentPointSize = x; glPointSize(currentPointSize);} //设置画笔粗细
@@ -118,8 +100,6 @@ public:
     void drawPoligon(); //画多边形
     void drawFilledPoligon(); //画填充多边形
 
-    void editLine(double x1, double y1); //编辑直线
-
     void chooseRect(double x1, double y1, double x2, double y2); //选择一块矩形区域
     void choosePoligon(); //选择一块多边形区域
     bool isPointInPoligon(double x, double y); //判断点是否在tempPoint的顶点群组成的多边形内
@@ -133,6 +113,7 @@ public:
     }
     void chooseInvert() //反向选择
     {
+        cleanChosenPoints();
         for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
         {
             (*ite)->chosen = !((*ite)->chosen);
@@ -143,20 +124,6 @@ public:
             }
         }
         update();
-    }
-    void chooseCheck() //检查是否还有选择的点
-    {
-        bool have = false;
-        for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
-            if((*ite)->chosen == true)
-                have = true;
-        if(have)
-            isChoosingPoints = true;
-        else
-        {
-            isChoosingPoints = false;
-            isNewChosen = false;
-        }
     }
 
     void moveChosenZone(double offsetX, double offsetY); //移动所选区域

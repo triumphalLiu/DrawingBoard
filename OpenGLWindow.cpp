@@ -592,41 +592,17 @@ void OpenGLWindow::traceUndo()
             points.insert(points.begin() + getPosByPID((*ite)->pid), *ite);
             ite = chosenPoints.erase(ite);
         }
-        isNewChosen = true;
+        if(getTrashPointsAmounts() == 1)
+            isNewChosen = true;
     }
     update();
-}
-
-unsigned OpenGLWindow::getPosByPID(unsigned id)
-{
-    if(points.size() == 0)
-        return 0;
-    if(id < points[0]->pid)
-        return 0;
-    for(unsigned i = 1; i < points.size(); ++i)
-    {
-        if(id < points[i]->pid)
-            return i;
-    }
-    return points.size();
-}
-
-int OpenGLWindow::getTrashPointsAmounts()
-{
-    int rtn = 0;
-    int cr = -1;
-    for(unsigned i = 0; i < trashPoints.size(); ++i)
-        if((int)(trashPoints[i]->pid) != cr)
-        {
-            rtn++;
-            cr = trashPoints[i]->pid;
-        }
-    return rtn;
 }
 
 void OpenGLWindow::traceRedo()
 {
     if(trashPoints.size() == 0) return;
+    if(getTrashPointsAmounts() == 1)
+        isNewChosen = true;
     std::vector<Entity*>::iterator ite = trashPoints.end() - 1;
     while((*ite)->pid == currentID)
     {
@@ -927,3 +903,31 @@ void OpenGLWindow::openFile(char *filepath)
     //Todo：打开文件
     qDebug() << filepath;
 }
+
+int OpenGLWindow::getTrashPointsAmounts()
+{
+    int rtn = 0;
+    int cr = -1;
+    for(unsigned i = 0; i < trashPoints.size(); ++i)
+        if((int)(trashPoints[i]->pid) != cr)
+        {
+            rtn++;
+            cr = trashPoints[i]->pid;
+        }
+    return rtn;
+}
+
+unsigned OpenGLWindow::getPosByPID(unsigned id)
+{
+    if(points.size() == 0)
+        return 0;
+    if(id < points[0]->pid)
+        return 0;
+    for(unsigned i = 1; i < points.size(); ++i)
+    {
+        if(id < points[i]->pid)
+            return i;
+    }
+    return points.size();
+}
+
