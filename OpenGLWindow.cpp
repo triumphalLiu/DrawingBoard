@@ -946,7 +946,7 @@ void OpenGLWindow::saveToFile(char *filepath)
     GLubyte *pPixelData = (GLubyte *)malloc(PixelDataLength);
     FILE *pWritingFile = fopen(filepath, "wb");
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-    glReadPixels(10, 40, width(), height(), GL_BGR, GL_UNSIGNED_BYTE, pPixelData);
+    glReadPixels(10, 40, width(), height(), GL_BGR, GL_UNSIGNED_BYTE, pPixelData); //10,40是相对于左下角的偏移量
     char BMP_Header[54] = {(char)0x42, (char)0x4D, (char)0x36, (char)0x2C, (char)0x22, (char)0x00, (char)0x00, (char)0x00, (char)0x00,\
                            (char)0x00, (char)0x36, (char)0x00, (char)0x00, (char)0x00, (char)0x28, (char)0x00, (char)0x00, (char)0x00,\
                            (char)0x58, (char)0x02, (char)0x00, (char)0x00, (char)0x90, (char)0x01, (char)0x00, (char)0x00, (char)0x01,\
@@ -962,8 +962,35 @@ void OpenGLWindow::saveToFile(char *filepath)
 
 void OpenGLWindow::openFile(char *filepath)
 {
-    //Todo：打开文件
-    qDebug() << filepath;
+    FILE *pOpenFile = fopen(filepath, "rb");
+    for(int i = 0; i < 54; ++i) fgetc(pOpenFile); //跳过BMP文件头
+    for(int i = 0; i < width() * height(); ++i)
+    {
+        double Blue, Green, Red;
+        GLubyte buffer;
+        fread(&buffer, sizeof(GLubyte), 1, pOpenFile);
+        Blue = (double)buffer/255.0;
+        fread(&buffer, sizeof(GLubyte), 1, pOpenFile);
+        Green = (double)buffer/255.0;
+        fread(&buffer, sizeof(GLubyte), 1, pOpenFile);
+        Red = (double)buffer/255.0;
+        if(!(Blue == Green && Green == Red && Green > 0.9))
+        {
+            Entity *temp = new Entity;
+            temp->chosen = false;
+            temp->color[0] = Red;
+            temp->color[1] = Green;
+            temp->color[2] = Blue;
+            temp->pid = currentID;
+            temp->size = 2;
+            temp->x = i % width();
+            temp->y = i / width();
+            points.push_back(temp);
+        }
+    }
+    fclose(pOpenFile);
+    ++currentID;
+    update();
 }
 
 int OpenGLWindow::getTrashPointsAmounts()
