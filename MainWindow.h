@@ -21,10 +21,12 @@ public:
     ~MainWindow();
 
 private slots:
+    void on_newPaint_triggered();
     void on_actionExit_triggered();
     void on_actionSave_triggered();
     void on_actionOpen_triggered();
     void on_actionCheck_triggered();
+    void on_actionViewCode_triggered();
 
     void on_drawLine_triggered();
     void on_drawPoint_triggered();
@@ -64,18 +66,14 @@ private slots:
 
     void on_Undo_clicked();
     void on_Redo_clicked();
-
     void on_undo_triggered();
-
     void on_redo_triggered();
-
-    void on_newPaint_triggered();
-
-    void on_actionViewCode_triggered();
-
     void on_Delete_clicked();
-
     void on_deleteZone_triggered();
+
+    void on_chooseByPid_triggered();
+
+    void on_Choose_clicked();
 
 private:
     Ui::MainWindow *ui;

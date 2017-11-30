@@ -34,7 +34,7 @@
    <widget class="QPushButton" name="ButtonChooseColor">
     <property name="geometry">
      <rect>
-      <x>510</x>
+      <x>530</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -294,7 +294,7 @@
    <widget class="QComboBox" name="PointSize">
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>470</x>
       <y>0</y>
       <width>42</width>
       <height>22</height>
@@ -491,7 +491,7 @@
    <widget class="QPushButton" name="Move">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>310</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -517,7 +517,7 @@
    <widget class="QPushButton" name="Rotate">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>330</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -543,7 +543,7 @@
    <widget class="QPushButton" name="Zoom">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>350</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -569,7 +569,7 @@
    <widget class="QPushButton" name="Undo">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>410</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -595,7 +595,7 @@
    <widget class="QPushButton" name="Redo">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>430</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -621,7 +621,7 @@
    <widget class="QPushButton" name="Delete">
     <property name="geometry">
      <rect>
-      <x>350</x>
+      <x>370</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -633,6 +633,32 @@
     <property name="icon">
      <iconset resource="src.qrc">
       <normaloff>:/new/color/src/deleteZone.png</normaloff>:/new/color/src/deleteZone.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Choose">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/choose.png</normaloff>:/new/color/src/choose.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -681,6 +707,7 @@
     <property name="title">
      <string>选择</string>
     </property>
+    <addaction name="chooseByPid"/>
     <addaction name="chooseRect"/>
     <addaction name="choosePologon"/>
     <addaction name="separator"/>
@@ -830,6 +857,11 @@
   <action name="deleteZone">
    <property name="text">
     <string>删除</string>
+   </property>
+  </action>
+  <action name="chooseByPid">
+   <property name="text">
+    <string>选择</string>
    </property>
   </action>
  </widget>

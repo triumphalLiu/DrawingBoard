@@ -328,3 +328,15 @@ void MainWindow::on_deleteZone_triggered()
 {
     ui->openGLWidget->deleteChosenZone();
 }
+
+void MainWindow::on_chooseByPid_triggered()
+{
+    ui->openGLWidget->setCurrentMode(11);
+    ui->openGLWidget->cleanTempPoints();
+    ui->statusBar->showMessage(tr("就绪-选取一个图元"));
+}
+
+void MainWindow::on_Choose_clicked()
+{
+    on_chooseByPid_triggered();
+}

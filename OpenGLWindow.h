@@ -100,6 +100,7 @@ public:
     void drawPoligon(); //画多边形
     void drawFilledPoligon(); //画填充多边形
 
+    void chooseEntityWithSamePID(double x, double y); //选择pid相同的所有点
     void chooseRect(double x1, double y1, double x2, double y2); //选择一块矩形区域
     void choosePoligon(); //选择一块多边形区域
     bool isPointInPoligon(double x, double y); //判断点是否在tempPoint的顶点群组成的多边形内

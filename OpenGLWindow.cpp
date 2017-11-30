@@ -280,6 +280,10 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
             }
         }
     }
+    else if(currentMode == 11)
+    {
+        chooseEntityWithSamePID(loc_x, loc_y);
+    }
     else if(currentMode == -1) //Move
     {
         if(isNewChosen)
@@ -403,6 +407,32 @@ void OpenGLWindow::mouseReleaseEvent(QMouseEvent *event)
         moveChosenZone(event->localPos().x() - originX, height() - event->localPos().y() - originY);
     }
     update();
+}
+
+void OpenGLWindow::chooseEntityWithSamePID(double x, double y)
+{
+    int currPid = -1;
+    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
+    {
+        if((*ite)->x - x <= 1 && (*ite)->y - y <= 1)
+        {
+            currPid = (*ite)->pid;
+            break;
+        }
+    }
+    qDebug() << x << y;
+    qDebug() << currPid;
+    if(currPid == -1) return;
+    chooseCancel();
+    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
+    {
+        if((int)((*ite)->pid) == currPid)
+        {
+            (*ite)->chosen = true;
+            isChoosingPoints = true;
+            isNewChosen = true;
+        }
+    }
 }
 
 void OpenGLWindow::chooseRect(double x1, double y1, double x2, double y2)

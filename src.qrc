@@ -20,5 +20,6 @@
         <file>src/undo.png</file>
         <file>src/Main.png</file>
         <file>src/deleteZone.png</file>
+        <file>src/choose.png</file>
     </qresource>
 </RCC>
