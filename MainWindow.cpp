@@ -146,7 +146,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "另存为...", ".", ("png图像文件(*.png)"));
+    QString fileName = QFileDialog::getOpenFileName(this, "另存为...", ".", ("位图文件(*.bmp)"));
     if(fileName.length() == 0) return;
     QByteArray bytearray = fileName.toLocal8Bit();
     char *temp = bytearray.data();
@@ -155,7 +155,7 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, "打开文件", ".", ("png图像文件(*.png)"));
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, "打开文件", ".", ("位图文件(*.bmp)"));
     if(fileNames.size() == 0) return;
     for(int i = 0; i < fileNames.size(); ++i)
     {
@@ -336,7 +336,7 @@ void MainWindow::on_chooseByPid_triggered()
     ui->statusBar->showMessage(tr("就绪-选取一个图元"));
 }
 
-void MainWindow::on_Choose_clicked()
+void MainWindow::on_ChooseByPid_clicked()
 {
     on_chooseByPid_triggered();
 }

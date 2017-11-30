@@ -48,6 +48,8 @@ private slots:
     void on_Poligon_clicked();
     void on_FilledPoligon_clicked();
 
+    void on_chooseByPid_triggered();
+    void on_ChooseByPid_clicked();
     void on_chooseRect_triggered();
     void on_ChooseRect_clicked();
     void on_choosePologon_triggered();
@@ -70,10 +72,6 @@ private slots:
     void on_redo_triggered();
     void on_Delete_clicked();
     void on_deleteZone_triggered();
-
-    void on_chooseByPid_triggered();
-
-    void on_Choose_clicked();
 
 private:
     Ui::MainWindow *ui;

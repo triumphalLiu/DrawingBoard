@@ -644,7 +644,7 @@
      <string>Ctrl+S</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="Choose">
+   <widget class="QPushButton" name="ChooseByPid">
     <property name="geometry">
      <rect>
       <x>290</x>

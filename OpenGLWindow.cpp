@@ -942,8 +942,22 @@ void OpenGLWindow::drawFilledPoligon()
 
 void OpenGLWindow::saveToFile(char *filepath)
 {
-    //Todo:保存文件
-    qDebug() << filepath;
+    GLint PixelDataLength = width() * 3 * height();
+    GLubyte *pPixelData = (GLubyte *)malloc(PixelDataLength);
+    FILE *pWritingFile = fopen(filepath, "wb");
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    glReadPixels(10, 40, width(), height(), GL_BGR, GL_UNSIGNED_BYTE, pPixelData);
+    char BMP_Header[54] = {(char)0x42, (char)0x4D, (char)0x36, (char)0x2C, (char)0x22, (char)0x00, (char)0x00, (char)0x00, (char)0x00,\
+                           (char)0x00, (char)0x36, (char)0x00, (char)0x00, (char)0x00, (char)0x28, (char)0x00, (char)0x00, (char)0x00,\
+                           (char)0x58, (char)0x02, (char)0x00, (char)0x00, (char)0x90, (char)0x01, (char)0x00, (char)0x00, (char)0x01,\
+                           (char)0x00, (char)0x18, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x2C,\
+                           (char)0x22, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00,\
+                           (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00, (char)0x00}; //BMP文件头
+    fwrite(BMP_Header, sizeof(BMP_Header), 1, pWritingFile);
+    fseek(pWritingFile, 0, SEEK_END);
+    fwrite(pPixelData, PixelDataLength, 1, pWritingFile);
+    fclose(pWritingFile);
+    free(pPixelData);
 }
 
 void OpenGLWindow::openFile(char *filepath)
@@ -978,4 +992,3 @@ unsigned OpenGLWindow::getPosByPID(unsigned id)
     }
     return points.size();
 }
-
