@@ -414,14 +414,11 @@ void OpenGLWindow::chooseEntityWithSamePID(double x, double y)
     int currPid = -1;
     for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
     {
-        if((*ite)->x - x <= 1 && (*ite)->y - y <= 1)
+        if(abs((*ite)->x - x) <= 1 && abs((*ite)->y - y) <= 1)
         {
             currPid = (*ite)->pid;
-            break;
         }
     }
-    qDebug() << x << y;
-    qDebug() << currPid;
     if(currPid == -1) return;
     chooseCancel();
     for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
