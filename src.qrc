@@ -22,5 +22,7 @@
         <file>src/deleteZone.png</file>
         <file>src/choose.png</file>
         <file>src/3d.png</file>
+        <file>src/minus.png</file>
+        <file>src/plus.png</file>
     </qresource>
 </RCC>

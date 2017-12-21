@@ -10,6 +10,7 @@ OpenGLWindow::OpenGLWindow(QWidget *parent)
     currentColor[2] = 0;
     AngleX = 25.0f;
     AngleY = 300.0f;
+    rectSize = 40;
     isChoosingPoints = false;
     setMouseTracking(false);//mouseMoveEvent only use when pressed down
 }
@@ -1043,6 +1044,7 @@ void OpenGLWindow::newPaint()
     if(currentMode == 0x42) {
         AngleX = 25.0f;
         AngleY = 300.0f;
+        rectSize = 40;
     }
     else {
         cleanPoints();
@@ -1108,68 +1110,68 @@ void OpenGLWindow::show3D()
 
     glBegin(GL_POLYGON); //前表面
     glColor3ub((GLubyte)255,(GLubyte)255,(GLubyte)255);//颜色设置为白色
-    glVertex3f(40.0f,40.0f,40.0f);
+    glVertex3f(rectSize,rectSize,rectSize);
     glColor3ub((GLubyte)255,(GLubyte)255,(GLubyte)0);//颜色设置为黄色
-    glVertex3f(40.0f,-40.0f,40.0f);
+    glVertex3f(rectSize,-rectSize,rectSize);
     glColor3ub((GLubyte)255,(GLubyte)0,(GLubyte)0);//颜色设置为红色
-    glVertex3f(-40.0f,-40.0f,40.0f);
+    glVertex3f(-rectSize,-rectSize,rectSize);
     glColor3ub((GLubyte)255,(GLubyte)0,(GLubyte)255);//颜色设置为白色
-    glVertex3f(-40.0f,40.0f,40.0f);
+    glVertex3f(-rectSize,rectSize,rectSize);
     glEnd();
 
     glBegin(GL_POLYGON); //后表面
     glColor3f(0.0f,1.0f,1.0f);//颜色设置为青色
-    glVertex3f(40.0f,40.0f,-40.0f);
+    glVertex3f(rectSize,rectSize,-rectSize);
     glColor3f(0.0f,1.0f,0.0f);//颜色设置为绿色
-    glVertex3f(40.0f,-40.0f,-40.0f);
+    glVertex3f(rectSize,-rectSize,-rectSize);
     glColor3f(0.0f,0.0f,0.0f);//颜色设置为黑色
-    glVertex3f(-40.0f,-40.0f,-40.0f);
+    glVertex3f(-rectSize,-rectSize,-rectSize);
     glColor3f(0.0f,0.0f,1.0f);//颜色设置为蓝色
-    glVertex3f(-40.0f,40.0f,-40.0f);
+    glVertex3f(-rectSize,rectSize,-rectSize);
     glEnd();
 
     glBegin(GL_POLYGON); //上表面
     glColor3d(0.0,1.0,1.0);//颜色设置为青色
-    glVertex3f(40.0f,40.0f,-40.0f);
+    glVertex3f(rectSize,rectSize,-rectSize);
     glColor3d(1.0,1.0,1.0);//颜色设置为白色
-    glVertex3f(40.0f,40.0f,40.0f);
+    glVertex3f(rectSize,rectSize,rectSize);
     glColor3d(1.0,0.0,1.0);//颜色设置为品红色
-    glVertex3f(-40.0f,40.0f,40.0f);
+    glVertex3f(-rectSize,rectSize,rectSize);
     glColor3d(0.0,0.0,1.0);//颜色设置为蓝色
-    glVertex3f(-40.0f,40.0f,-40.0f);
+    glVertex3f(-rectSize,rectSize,-rectSize);
     glEnd();
 
     glBegin(GL_POLYGON); //下表面
     glColor3ub(0u,255u,0u);//颜色设置为绿色
-    glVertex3f(40.0f,-40.0f,-40.0f);
+    glVertex3f(rectSize,-rectSize,-rectSize);
     glColor3ub(255u,255u,0u);//颜色设置为黄色
-    glVertex3f(40.0f,-40.0f,40.0f);
+    glVertex3f(rectSize,-rectSize,rectSize);
     glColor3ub(255u,0u,0u);//颜色设置为红色
-    glVertex3f(-40.0f,-40.0f,40.0f);
+    glVertex3f(-rectSize,-rectSize,rectSize);
     glColor3ub(0u,0u,0u);//颜色设置为黑色
-    glVertex3f(-40.0f,-40.0f,-40.0f);
+    glVertex3f(-rectSize,-rectSize,-rectSize);
     glEnd();
 
     glBegin(GL_POLYGON); //左表面
     glColor3ub((GLubyte)255,(GLubyte)255,(GLubyte)255);//颜色设置为白色
-    glVertex3f(40.0f,40.0f,40.0f);
+    glVertex3f(rectSize,rectSize,rectSize);
     glColor3ub((GLubyte)0,(GLubyte)255,(GLubyte)255);//颜色设置为青色
-    glVertex3f(40.0f,40.0f,-40.0f);
+    glVertex3f(rectSize,rectSize,-rectSize);
     glColor3ub((GLubyte)0,(GLubyte)255,(GLubyte)0);//颜色设置为绿色
-    glVertex3f(40.0f,-40.0f,-40.0f);
+    glVertex3f(rectSize,-rectSize,-rectSize);
     glColor3ub((GLubyte)255,(GLubyte)255,(GLubyte)0);//颜色设置为黄色
-    glVertex3f(40.0f,-40.0f,40.0f);
+    glVertex3f(rectSize,-rectSize,rectSize);
     glEnd();
 
     glBegin(GL_POLYGON); //右表面
     glColor3f(1.0f,0.0f,1.0f);//颜色设置为品红色
-    glVertex3f(-40.0f,40.0f,40.0f);
+    glVertex3f(-rectSize,rectSize,rectSize);
     glColor3f(0.0f,0.0f,1.0f);//颜色设置为蓝色
-    glVertex3f(-40.0f,40.0f,-40.0f);
+    glVertex3f(-rectSize,rectSize,-rectSize);
     glColor3f(0.0f,0.0f,0.0f);//颜色设置为黑色
-    glVertex3f(-40.0f,-40.0f,-40.0f);
+    glVertex3f(-rectSize,-rectSize,-rectSize);
     glColor3f(1.0f,0.0f,0.0f);//颜色设置为红色
-    glVertex3f(-40.0f,-40.0f,40.0f);
+    glVertex3f(-rectSize,-rectSize,rectSize);
     glEnd();
 
     glPopMatrix();

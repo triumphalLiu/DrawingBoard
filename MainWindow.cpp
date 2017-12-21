@@ -8,18 +8,24 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(this->width(), this->height());
     ui->statusBar->setSizeGripEnabled(false);
-    QMessageBox mb( "显示3维6面体", "请选择绘图模式？", QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape );
+    QMessageBox mb( "Drawing Board", "请选择绘图模式？", QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape );
+    QIcon *icon = new QIcon(":/new/color/src/Main.png");
+    mb.setWindowIcon(*icon);
     mb.setButtonText( QMessageBox::Yes, "2D模式" );
     mb.setButtonText( QMessageBox::No, "3D模式" );
     mb.setButtonText( QMessageBox::Cancel, "取消" );
     switch(mb.exec()) {
         case QMessageBox::Yes:
+            this->setWindowTitle(tr("Drawing Board - 2D"));
             ui->openGLWidget->setCurrentMode(-1);
-            ui->three_d_mode->setDisabled(true);
-            ui->action_3D->setDisabled(true);
+            ui->threed_minus->setDisabled(true);
+            ui->threed_plus->setDisabled(true);
+            ui->action_3D_minus->setDisabled(true);
+            ui->action_3D_plus->setDisabled(true);
             ui->statusBar->showMessage(tr("就绪-选择区域"));
             break;
         case QMessageBox::No:
+            this->setWindowTitle(tr("Drawing Board - 3D"));
             ui->openGLWidget->setCurrentMode(0x42);
             ui->ChooseByPid->setDisabled(true);
             ui->ChooseInvert->setDisabled(true);
@@ -237,7 +243,10 @@ void MainWindow::on_newPaint_triggered()
             on_actionSave_triggered();
         case QMessageBox::No:
             ui->openGLWidget->newPaint();
-            ui->statusBar->showMessage(tr("就绪-选择区域"));
+            if(ui->openGLWidget->getMode() != 0x42)
+                ui->statusBar->showMessage(tr("就绪-选择区域"));
+            else
+                ui->statusBar->showMessage(tr("就绪-显示和查看三维六面体"));
             break;
         case QMessageBox::Cancel:
             break;
@@ -251,40 +260,53 @@ void MainWindow::on_PointSize_currentIndexChanged(int index)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if (event->modifiers() == Qt::ControlModifier)
-    {
-        switch(event->key()){
-        case Qt::Key_Z:on_undo_triggered();break;
-        case Qt::Key_Y:on_redo_triggered();break;
-        case Qt::Key_A:on_actionSave_triggered();break;
-        case Qt::Key_O:on_actionOpen_triggered();break;
-        case Qt::Key_W:on_newPaint_triggered();break;
-        case Qt::Key_T:on_action_3D_triggered();break;
-        case Qt::Key_1:on_drawPoint_triggered();break;
-        case Qt::Key_2:on_drawLine_triggered();break;
-        case Qt::Key_3:on_drawCurve_triggered();break;
-        case Qt::Key_4:on_drawFilledRect_triggered();break;
-        case Qt::Key_5:on_drawRect_triggered();break;
-        case Qt::Key_6:on_drawFilledPoligon_triggered();break;
-        case Qt::Key_7:on_drawPoligon_triggered();break;
-        case Qt::Key_8:on_drawEllipse_triggered();break;
-        case Qt::Key_9:on_drawCircle_triggered();break;
-        default:break;
+    if(ui->openGLWidget->getMode() == 0x42){
+
+        if (event->modifiers() == Qt::ControlModifier)
+        {
+            switch(event->key()){
+            case Qt::Key_A:on_actionSave_triggered();break;
+            case Qt::Key_W:on_newPaint_triggered();break;
+            case Qt::Key_Z:on_action_3D_plus_triggered();break;
+            case Qt::Key_X:on_action_3D_minus_triggered();break;
+            }
         }
     }
-    else if(event->modifiers() == Qt::AltModifier)
-    {
-        switch(event->key()){
-        case Qt::Key_1:on_chooseRect_triggered();break;
-        case Qt::Key_2:on_choosePologon_triggered();break;
-        case Qt::Key_3:on_chooseInvert_triggered();break;
-        case Qt::Key_4:on_chooseByPid_triggered();break;
-        case Qt::Key_5:on_move_triggered();break;
-        case Qt::Key_6:on_rotate_triggered();break;
-        case Qt::Key_7:on_zoom_triggered();break;
-        case Qt::Key_8:on_deleteZone_triggered();break;
-        case Qt::Key_9:on_ButtonChooseColor_clicked();break;
-        default:break;
+    else{
+        if (event->modifiers() == Qt::ControlModifier)
+        {
+            switch(event->key()){
+            case Qt::Key_Z:on_undo_triggered();break;
+            case Qt::Key_Y:on_redo_triggered();break;
+            case Qt::Key_A:on_actionSave_triggered();break;
+            case Qt::Key_O:on_actionOpen_triggered();break;
+            case Qt::Key_W:on_newPaint_triggered();break;
+            case Qt::Key_1:on_drawPoint_triggered();break;
+            case Qt::Key_2:on_drawLine_triggered();break;
+            case Qt::Key_3:on_drawCurve_triggered();break;
+            case Qt::Key_4:on_drawFilledRect_triggered();break;
+            case Qt::Key_5:on_drawRect_triggered();break;
+            case Qt::Key_6:on_drawFilledPoligon_triggered();break;
+            case Qt::Key_7:on_drawPoligon_triggered();break;
+            case Qt::Key_8:on_drawEllipse_triggered();break;
+            case Qt::Key_9:on_drawCircle_triggered();break;
+            default:break;
+            }
+        }
+        else if(event->modifiers() == Qt::AltModifier)
+        {
+            switch(event->key()){
+            case Qt::Key_1:on_chooseRect_triggered();break;
+            case Qt::Key_2:on_choosePologon_triggered();break;
+            case Qt::Key_3:on_chooseInvert_triggered();break;
+            case Qt::Key_4:on_chooseByPid_triggered();break;
+            case Qt::Key_5:on_move_triggered();break;
+            case Qt::Key_6:on_rotate_triggered();break;
+            case Qt::Key_7:on_zoom_triggered();break;
+            case Qt::Key_8:on_deleteZone_triggered();break;
+            case Qt::Key_9:on_ButtonChooseColor_clicked();break;
+            default:break;
+            }
         }
     }
 }
@@ -415,32 +437,28 @@ void MainWindow::on_ChooseByPid_clicked()
     on_chooseByPid_triggered();
 }
 
-void MainWindow::on_three_d_mode_clicked()
+void MainWindow::on_action_3D_plus_triggered()
 {
-    on_action_3D_triggered();
+    if(ui->openGLWidget->getRectSize() < 60){
+        ui->openGLWidget->setRectSize(ui->openGLWidget->getRectSize() + 1);
+        ui->openGLWidget->update();
+    }
 }
 
-void MainWindow::on_action_3D_triggered()
+void MainWindow::on_action_3D_minus_triggered()
 {
-    QMessageBox mb( "显示3维6面体", "即将重置3D图形，是否保存当前画布内容？", QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape );
-    mb.setButtonText( QMessageBox::Yes, "保存" );
-    mb.setButtonText( QMessageBox::No, "不保存" );
-    mb.setButtonText( QMessageBox::Cancel, "取消" );
-    switch(mb.exec()) {
-        case QMessageBox::Yes:
-            on_actionSave_triggered();
-        case QMessageBox::No:
-            ui->openGLWidget->cleanPoints();
-            ui->openGLWidget->cleanTempPoints();
-            ui->openGLWidget->cleanTrashPoints();
-            ui->openGLWidget->cleanChosenPoints();
-            ui->openGLWidget->setCurrentMode(0x42);
-            update();
-            ui->statusBar->showMessage(tr("就绪-正在显示3维6面体"));
-            break;
-        case QMessageBox::Cancel:
-            return;
-        default:
-            return;
+    if(ui->openGLWidget->getRectSize() > -60){
+        ui->openGLWidget->setRectSize(ui->openGLWidget->getRectSize() - 1);
+        ui->openGLWidget->update();
     }
+}
+
+void MainWindow::on_threed_plus_clicked()
+{
+    on_action_3D_plus_triggered();
+}
+
+void MainWindow::on_threed_minus_clicked()
+{
+    on_action_3D_minus_triggered();
 }

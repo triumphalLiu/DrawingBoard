@@ -307,7 +307,7 @@
      <bool>false</bool>
     </property>
     <property name="currentText">
-     <string>5</string>
+     <string>1</string>
     </property>
     <item>
      <property name="text">
@@ -670,7 +670,7 @@
      <string>Ctrl+S</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="three_d_mode">
+   <widget class="QPushButton" name="threed_plus">
     <property name="geometry">
      <rect>
       <x>570</x>
@@ -684,7 +684,33 @@
     </property>
     <property name="icon">
      <iconset resource="src.qrc">
-      <normaloff>:/new/color/src/3d.png</normaloff>:/new/color/src/3d.png</iconset>
+      <normaloff>:/new/color/src/plus.png</normaloff>:/new/color/src/plus.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="threed_minus">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/minus.png</normaloff>:/new/color/src/minus.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -762,7 +788,8 @@
     <property name="title">
      <string>显示</string>
     </property>
-    <addaction name="action_3D"/>
+    <addaction name="action_3D_plus"/>
+    <addaction name="action_3D_minus"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -897,9 +924,14 @@
     <string>选择</string>
    </property>
   </action>
-  <action name="action_3D">
+  <action name="action_3D_plus">
    <property name="text">
-    <string>3D六面体</string>
+    <string>放大</string>
+   </property>
+  </action>
+  <action name="action_3D_minus">
+   <property name="text">
+    <string>缩小</string>
    </property>
   </action>
  </widget>

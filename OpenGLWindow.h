@@ -54,6 +54,7 @@ private:
 
     GLfloat AngleX;
     GLfloat AngleY;
+    int rectSize;
 
     std::vector<Entity*> points; //画布上所有点的集合
     std::vector<Entity*> trashPoints; //被撤销的点的集合
@@ -93,6 +94,7 @@ public:
     unsigned getPosByPID(unsigned id); //通过PID从points中
     int getMode(){return currentMode;} //获取画图模式
     int getTrashPointsAmounts(); //获取TrashPoints的ID数量
+    int getRectSize(){return rectSize;}//获取3维六面体的边长
 
     void setCurrentMode(int m){ //修改画图模式获取插入位置
         currentMode = m; cleanTempPoints(); isDrawPoligonJustNow = false;}
@@ -100,6 +102,8 @@ public:
         currentColor[0] = r; currentColor[1] = g; currentColor[2] = b; glColor3d(r, g, b);}
     void setCurrentPointSize(int x){ //设置画笔粗细
         currentPointSize = x; glPointSize(currentPointSize);}
+    void setRectSize(int x){//设置3维六面体的边长
+        rectSize = x;}
 
     void drawPoint(double x, double y); //画点
     void drawLine(double x1, double y1, double x2, double y2); //画线

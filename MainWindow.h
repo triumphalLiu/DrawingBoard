@@ -67,13 +67,16 @@ private slots:
 
     void on_ButtonChooseColor_clicked();
     void on_PointSize_currentIndexChanged(int index);
-    void on_three_d_mode_clicked();
-    void on_action_3D_triggered();
 
     void on_Undo_clicked();
     void on_Redo_clicked();
     void on_undo_triggered();
     void on_redo_triggered();
+
+    void on_action_3D_plus_triggered();
+    void on_action_3D_minus_triggered();
+    void on_threed_plus_clicked();
+    void on_threed_minus_clicked();
 
 private:
     Ui::MainWindow *ui;
