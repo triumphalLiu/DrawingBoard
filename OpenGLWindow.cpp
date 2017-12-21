@@ -8,6 +8,8 @@ OpenGLWindow::OpenGLWindow(QWidget *parent)
     currentColor[0] = 1;
     currentColor[1] = 170/255;
     currentColor[2] = 0;
+    AngleX = 25.0f;
+    AngleY = 300.0f;
     isChoosingPoints = false;
     setMouseTracking(false);//mouseMoveEvent only use when pressed down
 }
@@ -27,73 +29,335 @@ void OpenGLWindow::initializeGL()
 
 void OpenGLWindow::paintGL()
 {
-    for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
-    {
-        if((*ite)->chosen == false)
-            glColor3d((*ite)->color[0], (*ite)->color[1], (*ite)->color[2]);
-        else
-            glColor3d(0, 0, 0);
-        glPointSize((*ite)->size);
-        glBegin(GL_POINTS);
-        glVertex3d((*ite)->x, (*ite)->y, 0);
-        glEnd();
+    if(currentMode != 0x42) {
+        for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
+        {
+            if((*ite)->chosen == false)
+                glColor3d((*ite)->color[0], (*ite)->color[1], (*ite)->color[2]);
+            else
+                glColor3d(0, 0, 0);
+            glPointSize((*ite)->size);
+            glBegin(GL_POINTS);
+            glVertex3d((*ite)->x, (*ite)->y, 0);
+            glEnd();
+        }
+        glColor3d(currentColor[0], currentColor[1], currentColor[2]);
+        glPointSize(currentPointSize);
     }
-    glColor3d(currentColor[0], currentColor[1], currentColor[2]);
-    glPointSize(currentPointSize);
+    else {
+        show3D();
+    }
 }
 
 void OpenGLWindow::resizeGL(int w, int h)
 {
-    glViewport(0, 0, (GLsizei)w, (GLsizei)h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, this->size().width(), 0, this->size().height());
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    if(currentMode == 0x42){
+        GLfloat aspect = (GLfloat)w / (GLfloat)h;
+        GLfloat nRange = 100.0f;
+        glViewport(0,0,w,h);
+        glMatrixMode(GL_PROJECTION); //将当前矩阵指定为投影模式
+        glLoadIdentity();
+        //设置三维投影区
+        if (w<=h)
+            glOrtho(-nRange, nRange, -nRange * aspect, nRange * aspect, -nRange, nRange);
+        else
+            glOrtho(-nRange, nRange, -nRange / aspect, nRange / aspect, -nRange, nRange);
+    }
+    else{
+        glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        gluOrtho2D(0, this->size().width(), 0, this->size().height());
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+    }
 }
 
 void OpenGLWindow::mousePressEvent(QMouseEvent *event)
 {
     double loc_x = originX = event->localPos().x();
     double loc_y = originY = this->size().height() - event->localPos().y();
-    if(event->button() == Qt::MiddleButton) //中键取消选定
-    {
-        chooseCancel();
-        cleanTempPoints();
+    //3D
+    if(currentMode == 0x42){
+        if(event->button() == Qt::LeftButton){
+            isLeftButtonPressed = true;
+        }
     }
-    else if(event->button() == Qt::LeftButton)
-    {
-        cleanTrashPoints();
-        isLeftButtonPressed = true;
-    }
-    else if(event->button() == Qt::RightButton)
-    {
-        isRightButtonPressed = true;
-    }
-
-    if(currentMode == 0) //point
-    {
-        if(event->button() == Qt::LeftButton)
-            drawPoint(loc_x, loc_y);
-    }
-    else if(currentMode == 1) //line 左键单击选择两个点后自动画线 第二个点不松开可以移动 或画好后右键单击拖动也可修改第二个点的位置
-    {
-        if(event->button() == Qt::LeftButton)
+    //2D
+    else {
+        if(event->button() == Qt::MiddleButton) //中键取消选定
         {
-            if(tempPoints.size() == 2)
-                cleanTempPoints();
-            if(tempPoints.size() == 0)
-            {
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-            }
-            else if(tempPoints.size() == 1)
-            {
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-                drawLine((*(tempPoints.begin())).first, (*(tempPoints.begin())).second, (*(++tempPoints.begin())).first, (*(++tempPoints.begin())).second);
-                currentID++;
-            }
+            chooseCancel();
+            cleanTempPoints();
+        }
+        else if(event->button() == Qt::LeftButton)
+        {
+            cleanTrashPoints();
+            isLeftButtonPressed = true;
         }
         else if(event->button() == Qt::RightButton)
+        {
+            isRightButtonPressed = true;
+        }
+
+        if(currentMode == 0) //point
+        {
+            if(event->button() == Qt::LeftButton)
+                drawPoint(loc_x, loc_y);
+        }
+        else if(currentMode == 1) //line 左键单击选择两个点后自动画线 第二个点不松开可以移动 或画好后右键单击拖动也可修改第二个点的位置
+        {
+            if(event->button() == Qt::LeftButton)
+            {
+                if(tempPoints.size() == 2)
+                    cleanTempPoints();
+                if(tempPoints.size() == 0)
+                {
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                }
+                else if(tempPoints.size() == 1)
+                {
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                    drawLine((*(tempPoints.begin())).first, (*(tempPoints.begin())).second, (*(++tempPoints.begin())).first, (*(++tempPoints.begin())).second);
+                    currentID++;
+                }
+            }
+            else if(event->button() == Qt::RightButton)
+            {
+                if(tempPoints.size() == 2)
+                {
+                    traceUndo();
+                    cleanTrashPoints();
+                    drawLine(tempPoints[0].first, tempPoints[0].second, loc_x, loc_y);
+                    currentID++;
+                }
+            }
+        }
+        else if(currentMode == 2) //cruve 左键单击选择四个点后自动画曲线 第四个点不松开可以移动 或画好后右键单击拖动也可修改第四个点的位置
+        {
+            if(event->button() == Qt::LeftButton)
+            {
+                if(tempPoints.size() == 4)
+                    cleanTempPoints();
+                if(tempPoints.size() < 3)
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                else if(tempPoints.size() == 3)
+                {
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                    drawCruve();
+                    currentID++;
+                }
+            }
+            else if(event->button() == Qt::RightButton)
+            {
+                if(tempPoints.size() == 4)
+                {
+                    traceUndo();
+                    cleanTrashPoints();
+                    tempPoints[3].first = loc_x;
+                    tempPoints[3].second = loc_y;
+                    drawCruve();
+                    currentID++;
+                }
+            }
+        }
+        else if(currentMode == 3) //circle 左键单击选择圆心和圆上一点自动画圆 第二个点不松开可以移动 或画好后右键单击拖动也可修改圆上点的位置
+        {
+            if(event->button() == Qt::LeftButton)
+            {
+                if(tempPoints.size() == 2)
+                    cleanTempPoints();
+                if(tempPoints.size() == 0)
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                else if(tempPoints.size() == 1)
+                {
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                    double CircleRadius = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+                    drawCircle(tempPoints[0].first, tempPoints[0].second, CircleRadius);
+                    currentID++;
+                }
+            }
+            else if(event->button() == Qt::RightButton)
+            {
+                if(tempPoints.size() == 2)
+                {
+                    traceUndo();
+                    cleanTrashPoints();
+                    tempPoints[1].first = loc_x;
+                    tempPoints[1].second = loc_y;
+                    double CircleRadius = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+                    drawCircle(tempPoints[0].first, tempPoints[0].second, CircleRadius);
+                    currentID++;
+                }
+            }
+        }
+        else if(currentMode == 4) // ellipse 左键单击选择圆心和短轴（长轴）和长轴（短轴）自动画圆 第三个点不松开可以移动 或画好后右键单击拖动也可修改长轴（短轴）
+        {
+            if(event->button() == Qt::LeftButton)
+            {
+                if(tempPoints.size() == 3)
+                    cleanTempPoints();
+                if(tempPoints.size() < 2)
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                else if(tempPoints.size() == 2)
+                {
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                    double ra = sqrt(pow((tempPoints[1].first - tempPoints[0].first), 2) + pow((tempPoints[1].second - tempPoints[0].second), 2));
+                    double rb = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+                    drawEllipse(tempPoints[0].first, tempPoints[0].second, ra, rb);
+                    currentID++;
+                }
+            }
+            else if(event->button() == Qt::RightButton)
+            {
+                if(tempPoints.size() == 3)
+                {
+                    traceUndo();
+                    cleanTrashPoints();
+                    tempPoints[2].first = loc_x;
+                    tempPoints[2].second = loc_y;
+                    double ra = sqrt(pow((tempPoints[1].first - tempPoints[0].first), 2) + pow((tempPoints[1].second - tempPoints[0].second), 2));
+                    double rb = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
+                    drawEllipse(tempPoints[0].first, tempPoints[0].second, ra, rb);
+                    currentID++;
+                }
+            }
+        }
+        else if(currentMode == 5 || currentMode == 6 || currentMode == 9) //rect 左键单击选择对角线两个点后自动画矩形 第二个点不松开可以移动 或画好后右键单击拖动也可修改第二个点的位置
+        {
+            if(event->button() == Qt::LeftButton)
+            {
+                if(tempPoints.size() == 2)
+                    cleanTempPoints();
+                if(tempPoints.size() == 0)
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                else if(tempPoints.size() == 1)
+                {
+                    tempPoints.push_back(std::make_pair(loc_x, loc_y));
+                    if(currentMode == 5)
+                        drawRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                    else if(currentMode == 6)
+                        drawFilledRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                    else if(currentMode == 9)
+                    {
+                        chooseRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                        --currentID;
+                    }
+                    currentID++;
+                }
+            }
+            else if(event->button() == Qt::RightButton)
+            {
+                if(tempPoints.size() == 2)
+                {
+                    traceUndo();
+                    cleanTrashPoints();
+                    tempPoints[1].first = loc_x;
+                    tempPoints[1].second = loc_y;
+                    if(currentMode == 5)
+                        drawRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                    else if(currentMode == 6)
+                        drawFilledRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
+                    currentID++;
+                }
+            }
+        }
+        else if(currentMode == 7 || currentMode == 8 || currentMode == 10) //poligon
+        {
+            if(event->button() == Qt::LeftButton)
+            {
+                if(isDrawPoligonJustNow)
+                {
+                    cleanTempPoints();
+                    isDrawPoligonJustNow = false;
+                }
+                tempPoints.push_back(std::make_pair(loc_x, loc_y));
+            }
+            else if(event->button() == Qt::RightButton)
+            {
+                if(isDrawPoligonJustNow)
+                {
+                    traceUndo();
+                    cleanTrashPoints();
+                    tempPoints[tempPoints.size()-1].first = loc_x;
+                    tempPoints[tempPoints.size()-1].second = loc_y;
+                    if(currentMode == 7)
+                        drawPoligon();
+                    else if(currentMode == 8)
+                        drawFilledPoligon();
+                    currentID++;
+                }
+                else if(tempPoints.size() >= 3)
+                {
+                    if(currentMode == 7 && isDrawPoligonJustNow == false)
+                    {
+                        drawPoligon();
+                        currentID++;
+                        isDrawPoligonJustNow = true;
+                    }
+                    else if(currentMode == 8 && isDrawPoligonJustNow == false)
+                    {
+                        drawFilledPoligon();
+                        currentID++;
+                        isDrawPoligonJustNow = true;
+                    }
+                    else if(currentMode == 10)
+                    {
+                        choosePoligon();
+                        cleanTempPoints();
+                    }
+                }
+            }
+        }
+        else if(currentMode == 11)
+        {
+            chooseEntityWithSamePID(loc_x, loc_y);
+        }
+        else if(currentMode == -1) //Move
+        {
+            if(isNewChosen)
+            {
+                pickChosenPoints();
+                ++currentID; //选中后第一次移动才加
+                isNewChosen = false;
+            }
+        }
+    }
+    update();
+}
+
+void OpenGLWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    double loc_x = event->localPos().x();
+    double loc_y = this->size().height() - event->localPos().y();
+    if(currentMode == 0x42){
+
+        //上：x- 下：x+ 左：y- 右：y+  225 ~ 265 315 ~ 355 abnormal
+        if((AngleX > 225 && AngleX < 265) || (AngleX > 315 && AngleX < 355))
+            AngleY -= (loc_x - originX) / 5;
+        else
+            AngleY += (loc_x - originX) / 5;
+        AngleX -= (loc_y - originY) / 5;
+        //qDebug() <<  AngleX << AngleY;
+        if(AngleX > 355)
+            AngleX = 0;
+        if(AngleX < 0)
+            AngleX = 355;
+        originX = loc_x;
+        originY = loc_y;
+    }
+    else{
+        if(currentMode == -1) //Move
+        {
+            if(isLeftButtonPressed)
+                moveChosenZone(event->localPos().x() - originX, height() - event->localPos().y() - originY);
+        }
+        else if(currentMode == 0) //point
+        {
+            if(isLeftButtonPressed)
+                drawPoint(loc_x, loc_y);
+        }
+        else if(currentMode == 1) //line
         {
             if(tempPoints.size() == 2)
             {
@@ -103,23 +367,7 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
                 currentID++;
             }
         }
-    }
-    else if(currentMode == 2) //cruve 左键单击选择四个点后自动画曲线 第四个点不松开可以移动 或画好后右键单击拖动也可修改第四个点的位置
-    {
-        if(event->button() == Qt::LeftButton)
-        {
-            if(tempPoints.size() == 4)
-                cleanTempPoints();
-            if(tempPoints.size() < 3)
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-            else if(tempPoints.size() == 3)
-            {
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-                drawCruve();
-                currentID++;
-            }
-        }
-        else if(event->button() == Qt::RightButton)
+        else if(currentMode == 2) //curve
         {
             if(tempPoints.size() == 4)
             {
@@ -131,24 +379,7 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
                 currentID++;
             }
         }
-    }
-    else if(currentMode == 3) //circle 左键单击选择圆心和圆上一点自动画圆 第二个点不松开可以移动 或画好后右键单击拖动也可修改圆上点的位置
-    {
-        if(event->button() == Qt::LeftButton)
-        {
-            if(tempPoints.size() == 2)
-                cleanTempPoints();
-            if(tempPoints.size() == 0)
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-            else if(tempPoints.size() == 1)
-            {
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-                double CircleRadius = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
-                drawCircle(tempPoints[0].first, tempPoints[0].second, CircleRadius);
-                currentID++;
-            }
-        }
-        else if(event->button() == Qt::RightButton)
+        else if(currentMode == 3) //circle
         {
             if(tempPoints.size() == 2)
             {
@@ -161,25 +392,7 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
                 currentID++;
             }
         }
-    }
-    else if(currentMode == 4) // ellipse 左键单击选择圆心和短轴（长轴）和长轴（短轴）自动画圆 第三个点不松开可以移动 或画好后右键单击拖动也可修改长轴（短轴）
-    {
-        if(event->button() == Qt::LeftButton)
-        {
-            if(tempPoints.size() == 3)
-                cleanTempPoints();
-            if(tempPoints.size() < 2)
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-            else if(tempPoints.size() == 2)
-            {
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-                double ra = sqrt(pow((tempPoints[1].first - tempPoints[0].first), 2) + pow((tempPoints[1].second - tempPoints[0].second), 2));
-                double rb = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
-                drawEllipse(tempPoints[0].first, tempPoints[0].second, ra, rb);
-                currentID++;
-            }
-        }
-        else if(event->button() == Qt::RightButton)
+        else if(currentMode == 4) //ellipse
         {
             if(tempPoints.size() == 3)
             {
@@ -193,31 +406,7 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
                 currentID++;
             }
         }
-    }
-    else if(currentMode == 5 || currentMode == 6 || currentMode == 9) //rect 左键单击选择对角线两个点后自动画矩形 第二个点不松开可以移动 或画好后右键单击拖动也可修改第二个点的位置
-    {
-        if(event->button() == Qt::LeftButton)
-        {
-            if(tempPoints.size() == 2)
-                cleanTempPoints();
-            if(tempPoints.size() == 0)
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-            else if(tempPoints.size() == 1)
-            {
-                tempPoints.push_back(std::make_pair(loc_x, loc_y));
-                if(currentMode == 5)
-                    drawRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
-                else if(currentMode == 6)
-                    drawFilledRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
-                else if(currentMode == 9)
-                {
-                    chooseRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
-                    --currentID;
-                }
-                currentID++;
-            }
-        }
-        else if(event->button() == Qt::RightButton)
+        else if(currentMode == 5 || currentMode == 6) //rect
         {
             if(tempPoints.size() == 2)
             {
@@ -232,21 +421,9 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
                 currentID++;
             }
         }
-    }
-    else if(currentMode == 7 || currentMode == 8 || currentMode == 10) //poligon
-    {
-        if(event->button() == Qt::LeftButton)
+        else if(currentMode == 7 || currentMode == 8) //poligon
         {
-            if(isDrawPoligonJustNow)
-            {
-                cleanTempPoints();
-                isDrawPoligonJustNow = false;
-            }
-            tempPoints.push_back(std::make_pair(loc_x, loc_y));
-        }
-        else if(event->button() == Qt::RightButton)
-        {
-            if(isDrawPoligonJustNow)
+            if(tempPoints.size() >= 3 && isDrawPoligonJustNow)
             {
                 traceUndo();
                 cleanTrashPoints();
@@ -258,139 +435,10 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
                     drawFilledPoligon();
                 currentID++;
             }
-            else if(tempPoints.size() >= 3)
-            {
-                if(currentMode == 7 && isDrawPoligonJustNow == false)
-                {
-                    drawPoligon();
-                    currentID++;
-                    isDrawPoligonJustNow = true;
-                }
-                else if(currentMode == 8 && isDrawPoligonJustNow == false)
-                {
-                    drawFilledPoligon();
-                    currentID++;
-                    isDrawPoligonJustNow = true;
-                }
-                else if(currentMode == 10)
-                {
-                    choosePoligon();
-                    cleanTempPoints();
-                }
-            }
         }
+        originX = loc_x;
+        originY = loc_y;
     }
-    else if(currentMode == 11)
-    {
-        chooseEntityWithSamePID(loc_x, loc_y);
-    }
-    else if(currentMode == -1) //Move
-    {
-        if(isNewChosen)
-        {
-            pickChosenPoints();
-            ++currentID; //选中后第一次移动才加
-            isNewChosen = false;
-        }
-    }
-    update();
-}
-
-void OpenGLWindow::mouseMoveEvent(QMouseEvent *event)
-{
-    double loc_x = event->localPos().x();
-    double loc_y = this->size().height() - event->localPos().y();
-    if(currentMode == -1) //Move
-    {
-        if(isLeftButtonPressed)
-            moveChosenZone(event->localPos().x() - originX, height() - event->localPos().y() - originY);
-    }
-    else if(currentMode == 0) //point
-    {
-        if(isLeftButtonPressed)
-            drawPoint(loc_x, loc_y);
-    }
-    else if(currentMode == 1) //line
-    {
-        if(tempPoints.size() == 2)
-        {
-            traceUndo();
-            cleanTrashPoints();
-            drawLine(tempPoints[0].first, tempPoints[0].second, loc_x, loc_y);
-            currentID++;
-        }
-    }
-    else if(currentMode == 2) //curve
-    {
-        if(tempPoints.size() == 4)
-        {
-            traceUndo();
-            cleanTrashPoints();
-            tempPoints[3].first = loc_x;
-            tempPoints[3].second = loc_y;
-            drawCruve();
-            currentID++;
-        }
-    }
-    else if(currentMode == 3) //circle
-    {
-        if(tempPoints.size() == 2)
-        {
-            traceUndo();
-            cleanTrashPoints();
-            tempPoints[1].first = loc_x;
-            tempPoints[1].second = loc_y;
-            double CircleRadius = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
-            drawCircle(tempPoints[0].first, tempPoints[0].second, CircleRadius);
-            currentID++;
-        }
-    }
-    else if(currentMode == 4) //ellipse
-    {
-        if(tempPoints.size() == 3)
-        {
-            traceUndo();
-            cleanTrashPoints();
-            tempPoints[2].first = loc_x;
-            tempPoints[2].second = loc_y;
-            double ra = sqrt(pow((tempPoints[1].first - tempPoints[0].first), 2) + pow((tempPoints[1].second - tempPoints[0].second), 2));
-            double rb = sqrt(pow((loc_x - tempPoints[0].first), 2) + pow((loc_y - tempPoints[0].second), 2));
-            drawEllipse(tempPoints[0].first, tempPoints[0].second, ra, rb);
-            currentID++;
-        }
-    }
-    else if(currentMode == 5 || currentMode == 6) //rect
-    {
-        if(tempPoints.size() == 2)
-        {
-            traceUndo();
-            cleanTrashPoints();
-            tempPoints[1].first = loc_x;
-            tempPoints[1].second = loc_y;
-            if(currentMode == 5)
-                drawRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
-            else if(currentMode == 6)
-                drawFilledRect(tempPoints[0].first, tempPoints[0].second, tempPoints[1].first, tempPoints[1].second);
-            currentID++;
-        }
-    }
-    else if(currentMode == 7 || currentMode == 8) //poligon
-    {
-        if(tempPoints.size() >= 3 && isDrawPoligonJustNow)
-        {
-            traceUndo();
-            cleanTrashPoints();
-            tempPoints[tempPoints.size()-1].first = loc_x;
-            tempPoints[tempPoints.size()-1].second = loc_y;
-            if(currentMode == 7)
-                drawPoligon();
-            else if(currentMode == 8)
-                drawFilledPoligon();
-            currentID++;
-        }
-    }
-    originX = loc_x;
-    originY = loc_y;
     update();
 }
 
@@ -990,6 +1038,31 @@ void OpenGLWindow::openFile(char *filepath)
     update();
 }
 
+void OpenGLWindow::newPaint()
+{
+    if(currentMode == 0x42) {
+        AngleX = 25.0f;
+        AngleY = 300.0f;
+    }
+    else {
+        cleanPoints();
+        cleanTempPoints();
+        cleanTrashPoints();
+        cleanChosenPoints();
+
+        currentMode = -1;
+        currentPointSize = 5;
+        currentID = 0;
+        currentColor[0] = 1;
+        currentColor[1] = 170/255;
+        currentColor[2] = 0;
+        isChoosingPoints = false;
+        isNewChosen = false;
+        setMouseTracking(false);//mouseMoveEvent only use when pressed down
+    }
+    update();
+}
+
 int OpenGLWindow::getTrashPointsAmounts()
 {
     int rtn = 0;
@@ -1015,4 +1088,89 @@ unsigned OpenGLWindow::getPosByPID(unsigned id)
             return i;
     }
     return points.size();
+}
+
+void OpenGLWindow::show3D()
+{
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DITHER);
+    glShadeModel(GL_SMOOTH);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glPushMatrix();
+    glRotatef(AngleX,1.0f,0.0f,0.0f);
+    glRotatef(AngleY,0.0f,1.0f,0.0f);
+
+    glBegin(GL_POLYGON); //前表面
+    glColor3ub((GLubyte)255,(GLubyte)255,(GLubyte)255);//颜色设置为白色
+    glVertex3f(40.0f,40.0f,40.0f);
+    glColor3ub((GLubyte)255,(GLubyte)255,(GLubyte)0);//颜色设置为黄色
+    glVertex3f(40.0f,-40.0f,40.0f);
+    glColor3ub((GLubyte)255,(GLubyte)0,(GLubyte)0);//颜色设置为红色
+    glVertex3f(-40.0f,-40.0f,40.0f);
+    glColor3ub((GLubyte)255,(GLubyte)0,(GLubyte)255);//颜色设置为白色
+    glVertex3f(-40.0f,40.0f,40.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON); //后表面
+    glColor3f(0.0f,1.0f,1.0f);//颜色设置为青色
+    glVertex3f(40.0f,40.0f,-40.0f);
+    glColor3f(0.0f,1.0f,0.0f);//颜色设置为绿色
+    glVertex3f(40.0f,-40.0f,-40.0f);
+    glColor3f(0.0f,0.0f,0.0f);//颜色设置为黑色
+    glVertex3f(-40.0f,-40.0f,-40.0f);
+    glColor3f(0.0f,0.0f,1.0f);//颜色设置为蓝色
+    glVertex3f(-40.0f,40.0f,-40.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON); //上表面
+    glColor3d(0.0,1.0,1.0);//颜色设置为青色
+    glVertex3f(40.0f,40.0f,-40.0f);
+    glColor3d(1.0,1.0,1.0);//颜色设置为白色
+    glVertex3f(40.0f,40.0f,40.0f);
+    glColor3d(1.0,0.0,1.0);//颜色设置为品红色
+    glVertex3f(-40.0f,40.0f,40.0f);
+    glColor3d(0.0,0.0,1.0);//颜色设置为蓝色
+    glVertex3f(-40.0f,40.0f,-40.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON); //下表面
+    glColor3ub(0u,255u,0u);//颜色设置为绿色
+    glVertex3f(40.0f,-40.0f,-40.0f);
+    glColor3ub(255u,255u,0u);//颜色设置为黄色
+    glVertex3f(40.0f,-40.0f,40.0f);
+    glColor3ub(255u,0u,0u);//颜色设置为红色
+    glVertex3f(-40.0f,-40.0f,40.0f);
+    glColor3ub(0u,0u,0u);//颜色设置为黑色
+    glVertex3f(-40.0f,-40.0f,-40.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON); //左表面
+    glColor3ub((GLubyte)255,(GLubyte)255,(GLubyte)255);//颜色设置为白色
+    glVertex3f(40.0f,40.0f,40.0f);
+    glColor3ub((GLubyte)0,(GLubyte)255,(GLubyte)255);//颜色设置为青色
+    glVertex3f(40.0f,40.0f,-40.0f);
+    glColor3ub((GLubyte)0,(GLubyte)255,(GLubyte)0);//颜色设置为绿色
+    glVertex3f(40.0f,-40.0f,-40.0f);
+    glColor3ub((GLubyte)255,(GLubyte)255,(GLubyte)0);//颜色设置为黄色
+    glVertex3f(40.0f,-40.0f,40.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON); //右表面
+    glColor3f(1.0f,0.0f,1.0f);//颜色设置为品红色
+    glVertex3f(-40.0f,40.0f,40.0f);
+    glColor3f(0.0f,0.0f,1.0f);//颜色设置为蓝色
+    glVertex3f(-40.0f,40.0f,-40.0f);
+    glColor3f(0.0f,0.0f,0.0f);//颜色设置为黑色
+    glVertex3f(-40.0f,-40.0f,-40.0f);
+    glColor3f(1.0f,0.0f,0.0f);//颜色设置为红色
+    glVertex3f(-40.0f,-40.0f,40.0f);
+    glEnd();
+
+    glPopMatrix();
 }

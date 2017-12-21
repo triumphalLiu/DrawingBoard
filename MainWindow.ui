@@ -307,7 +307,7 @@
      <bool>false</bool>
     </property>
     <property name="currentText">
-     <string>1</string>
+     <string>5</string>
     </property>
     <item>
      <property name="text">
@@ -413,7 +413,7 @@
    <widget class="QPushButton" name="ChooseRect">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>230</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -439,7 +439,7 @@
    <widget class="QPushButton" name="ChoosePoligon">
     <property name="geometry">
      <rect>
-      <x>230</x>
+      <x>250</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -465,7 +465,7 @@
    <widget class="QPushButton" name="ChooseInvert">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>270</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -647,7 +647,7 @@
    <widget class="QPushButton" name="ChooseByPid">
     <property name="geometry">
      <rect>
-      <x>290</x>
+      <x>210</x>
       <y>0</y>
       <width>21</width>
       <height>21</height>
@@ -659,6 +659,32 @@
     <property name="icon">
      <iconset resource="src.qrc">
       <normaloff>:/new/color/src/choose.png</normaloff>:/new/color/src/choose.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
+     </size>
+    </property>
+    <property name="shortcut">
+     <string>Ctrl+S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="three_d_mode">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>0</y>
+      <width>21</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="src.qrc">
+      <normaloff>:/new/color/src/3d.png</normaloff>:/new/color/src/3d.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -732,10 +758,17 @@
     <addaction name="actionCheck"/>
     <addaction name="actionViewCode"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>显示</string>
+    </property>
+    <addaction name="action_3D"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuInsert"/>
    <addaction name="menuChoose"/>
+   <addaction name="menu"/>
    <addaction name="menuDeveloperTool"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -862,6 +895,11 @@
   <action name="chooseByPid">
    <property name="text">
     <string>选择</string>
+   </property>
+  </action>
+  <action name="action_3D">
+   <property name="text">
+    <string>3D六面体</string>
    </property>
   </action>
  </widget>

@@ -8,7 +8,67 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setFixedSize(this->width(), this->height());
     ui->statusBar->setSizeGripEnabled(false);
-    ui->statusBar->showMessage(tr("就绪-移动所选区域"));
+    QMessageBox mb( "显示3维6面体", "请选择绘图模式？", QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape );
+    mb.setButtonText( QMessageBox::Yes, "2D模式" );
+    mb.setButtonText( QMessageBox::No, "3D模式" );
+    mb.setButtonText( QMessageBox::Cancel, "取消" );
+    switch(mb.exec()) {
+        case QMessageBox::Yes:
+            ui->openGLWidget->setCurrentMode(-1);
+            ui->three_d_mode->setDisabled(true);
+            ui->action_3D->setDisabled(true);
+            ui->statusBar->showMessage(tr("就绪-选择区域"));
+            break;
+        case QMessageBox::No:
+            ui->openGLWidget->setCurrentMode(0x42);
+            ui->ChooseByPid->setDisabled(true);
+            ui->ChooseInvert->setDisabled(true);
+            ui->ChoosePoligon->setDisabled(true);
+            ui->ChooseRect->setDisabled(true);
+            ui->Circle->setDisabled(true);
+            ui->Curve->setDisabled(true);
+            ui->Delete->setDisabled(true);
+            ui->Ellipse->setDisabled(true);
+            ui->FilledPoligon->setDisabled(true);
+            ui->FilledRect->setDisabled(true);
+            ui->Line->setDisabled(true);
+            ui->Move->setDisabled(true);
+            ui->Point->setDisabled(true);
+            ui->PointSize->setDisabled(true);
+            ui->Poligon->setDisabled(true);
+            ui->Rect->setDisabled(true);
+            ui->Redo->setDisabled(true);
+            ui->Undo->setDisabled(true);
+            ui->Rotate->setDisabled(true);
+            ui->Zoom->setDisabled(true);
+            ui->actionOpen->setDisabled(true);
+            ui->chooseByPid->setDisabled(true);
+            ui->chooseInvert->setDisabled(true);
+            ui->choosePologon->setDisabled(true);
+            ui->chooseRect->setDisabled(true);
+            ui->deleteZone->setDisabled(true);
+            ui->drawCircle->setDisabled(true);
+            ui->drawCurve->setDisabled(true);
+            ui->drawEllipse->setDisabled(true);
+            ui->drawFilledPoligon->setDisabled(true);
+            ui->drawFilledRect->setDisabled(true);
+            ui->drawLine->setDisabled(true);
+            ui->drawPoint->setDisabled(true);
+            ui->drawPoligon->setDisabled(true);
+            ui->drawRect->setDisabled(true);
+            ui->ButtonChooseColor->setDisabled(true);
+            ui->move->setDisabled(true);
+            ui->rotate->setDisabled(true);
+            ui->zoom->setDisabled(true);
+            ui->undo->setDisabled(true);
+            ui->redo->setDisabled(true);
+            ui->statusBar->showMessage(tr("就绪-显示和查看三维六面体"));
+            break;
+        case QMessageBox::Cancel:
+            exit(0);
+        default:
+            exit(0);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -146,7 +206,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "另存为...", ".", ("位图文件(*.bmp)"));
+    QString fileName = QFileDialog::getSaveFileName(this, "另存为...", ".", ("位图文件(*.bmp)"));
     if(fileName.length() == 0) return;
     QByteArray bytearray = fileName.toLocal8Bit();
     char *temp = bytearray.data();
@@ -176,10 +236,8 @@ void MainWindow::on_newPaint_triggered()
         case QMessageBox::Yes:
             on_actionSave_triggered();
         case QMessageBox::No:
-            ui->openGLWidget->cleanPoints();
-            ui->openGLWidget->cleanTempPoints();
-            ui->openGLWidget->cleanTrashPoints();
-            ui->openGLWidget->cleanChosenPoints();
+            ui->openGLWidget->newPaint();
+            ui->statusBar->showMessage(tr("就绪-选择区域"));
             break;
         case QMessageBox::Cancel:
             break;
@@ -193,25 +251,41 @@ void MainWindow::on_PointSize_currentIndexChanged(int index)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if ((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_Z)) //撤销
+    if (event->modifiers() == Qt::ControlModifier)
     {
-        ui->openGLWidget->traceUndo();
+        switch(event->key()){
+        case Qt::Key_Z:on_undo_triggered();break;
+        case Qt::Key_Y:on_redo_triggered();break;
+        case Qt::Key_A:on_actionSave_triggered();break;
+        case Qt::Key_O:on_actionOpen_triggered();break;
+        case Qt::Key_W:on_newPaint_triggered();break;
+        case Qt::Key_T:on_action_3D_triggered();break;
+        case Qt::Key_1:on_drawPoint_triggered();break;
+        case Qt::Key_2:on_drawLine_triggered();break;
+        case Qt::Key_3:on_drawCurve_triggered();break;
+        case Qt::Key_4:on_drawFilledRect_triggered();break;
+        case Qt::Key_5:on_drawRect_triggered();break;
+        case Qt::Key_6:on_drawFilledPoligon_triggered();break;
+        case Qt::Key_7:on_drawPoligon_triggered();break;
+        case Qt::Key_8:on_drawEllipse_triggered();break;
+        case Qt::Key_9:on_drawCircle_triggered();break;
+        default:break;
+        }
     }
-    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_Y)) //恢复
+    else if(event->modifiers() == Qt::AltModifier)
     {
-        ui->openGLWidget->traceRedo();
-    }
-    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_A)) //保存
-    {
-        on_actionSave_triggered();
-    }
-    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_O)) //打开
-    {
-        on_actionOpen_triggered();
-    }
-    else if((event->modifiers() == Qt::ControlModifier) && (event->key() == Qt::Key_W)) //重建
-    {
-        on_newPaint_triggered();
+        switch(event->key()){
+        case Qt::Key_1:on_chooseRect_triggered();break;
+        case Qt::Key_2:on_choosePologon_triggered();break;
+        case Qt::Key_3:on_chooseInvert_triggered();break;
+        case Qt::Key_4:on_chooseByPid_triggered();break;
+        case Qt::Key_5:on_move_triggered();break;
+        case Qt::Key_6:on_rotate_triggered();break;
+        case Qt::Key_7:on_zoom_triggered();break;
+        case Qt::Key_8:on_deleteZone_triggered();break;
+        case Qt::Key_9:on_ButtonChooseColor_clicked();break;
+        default:break;
+        }
     }
 }
 
@@ -339,4 +413,34 @@ void MainWindow::on_chooseByPid_triggered()
 void MainWindow::on_ChooseByPid_clicked()
 {
     on_chooseByPid_triggered();
+}
+
+void MainWindow::on_three_d_mode_clicked()
+{
+    on_action_3D_triggered();
+}
+
+void MainWindow::on_action_3D_triggered()
+{
+    QMessageBox mb( "显示3维6面体", "即将重置3D图形，是否保存当前画布内容？", QMessageBox::Information, QMessageBox::Yes | QMessageBox::Default, QMessageBox::No, QMessageBox::Cancel | QMessageBox::Escape );
+    mb.setButtonText( QMessageBox::Yes, "保存" );
+    mb.setButtonText( QMessageBox::No, "不保存" );
+    mb.setButtonText( QMessageBox::Cancel, "取消" );
+    switch(mb.exec()) {
+        case QMessageBox::Yes:
+            on_actionSave_triggered();
+        case QMessageBox::No:
+            ui->openGLWidget->cleanPoints();
+            ui->openGLWidget->cleanTempPoints();
+            ui->openGLWidget->cleanTrashPoints();
+            ui->openGLWidget->cleanChosenPoints();
+            ui->openGLWidget->setCurrentMode(0x42);
+            update();
+            ui->statusBar->showMessage(tr("就绪-正在显示3维6面体"));
+            break;
+        case QMessageBox::Cancel:
+            return;
+        default:
+            return;
+    }
 }

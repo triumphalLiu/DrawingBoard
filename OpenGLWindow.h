@@ -52,6 +52,9 @@ private:
     bool isNewChosen; //是否新选择了一块区域
     bool isDrawPoligonJustNow; //是否刚画了多边形
 
+    GLfloat AngleX;
+    GLfloat AngleY;
+
     std::vector<Entity*> points; //画布上所有点的集合
     std::vector<Entity*> trashPoints; //被撤销的点的集合
     std::vector<Entity*> chosenPoints; //被选取点的集合
@@ -77,18 +80,26 @@ public:
         qDebug() << "------------------Debug End!";
     }
 
-    void cleanTempPoints(){while(!tempPoints.empty()) {tempPoints.pop_back();}} //清空tempPoints
-    void cleanTrashPoints(){while(trashPoints.size() > 0){delete trashPoints[trashPoints.size()-1];trashPoints.pop_back();}} //清空trashPoints 撤销后一旦开始画图即清空
-    void cleanPoints(){while(points.size() > 0){delete points[points.size()-1];points.pop_back();}currentID = 0;} //清空points
-    void cleanChosenPoints(){while(chosenPoints.size() > 0){delete chosenPoints[chosenPoints.size()-1];chosenPoints.pop_back();}} //清空chosenPoints 在chooseCancel中会被调用
+    void cleanTempPoints(){//清空tempPoints
+        while(!tempPoints.empty()) {tempPoints.pop_back();}
+    }
+    void cleanTrashPoints(){//清空trashPoints 撤销后一旦开始画图即清空
+        while(trashPoints.size() > 0){delete trashPoints[trashPoints.size()-1];trashPoints.pop_back();}}
+    void cleanPoints(){//清空points
+        while(points.size() > 0){delete points[points.size()-1];points.pop_back();}currentID = 0;}
+    void cleanChosenPoints(){//清空chosenPoints 在chooseCancel中会被调用
+        while(chosenPoints.size() > 0){delete chosenPoints[chosenPoints.size()-1];chosenPoints.pop_back();}}
 
     unsigned getPosByPID(unsigned id); //通过PID从points中
     int getMode(){return currentMode;} //获取画图模式
     int getTrashPointsAmounts(); //获取TrashPoints的ID数量
 
-    void setCurrentMode(int m){currentMode = m; cleanTempPoints(); isDrawPoligonJustNow = false;} //修改画图模式获取插入位置
-    void setCurrentColor(double r, double g, double b){currentColor[0] = r; currentColor[1] = g; currentColor[2] = b; glColor3d(r, g, b);} //设置画笔颜色
-    void setCurrentPointSize(int x){currentPointSize = x; glPointSize(currentPointSize);} //设置画笔粗细
+    void setCurrentMode(int m){ //修改画图模式获取插入位置
+        currentMode = m; cleanTempPoints(); isDrawPoligonJustNow = false;}
+    void setCurrentColor(double r, double g, double b){//设置画笔颜色
+        currentColor[0] = r; currentColor[1] = g; currentColor[2] = b; glColor3d(r, g, b);}
+    void setCurrentPointSize(int x){ //设置画笔粗细
+        currentPointSize = x; glPointSize(currentPointSize);}
 
     void drawPoint(double x, double y); //画点
     void drawLine(double x1, double y1, double x2, double y2); //画线
@@ -135,9 +146,12 @@ public:
 
     void saveToFile(char *filepath); //将画布内容保存到文件 TODO
     void openFile(char *filepath); //打开文件并画到画布 TODO
+    void newPaint();
 
     void traceUndo(); //撤销
     void traceRedo(); //恢复
+
+    void show3D(); //显示3维6面体
 
 protected:
     void initializeGL();

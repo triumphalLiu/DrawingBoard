@@ -62,16 +62,18 @@ private slots:
     void on_rotate_triggered();
     void on_Zoom_clicked();
     void on_zoom_triggered();
+    void on_Delete_clicked();
+    void on_deleteZone_triggered();
 
     void on_ButtonChooseColor_clicked();
     void on_PointSize_currentIndexChanged(int index);
+    void on_three_d_mode_clicked();
+    void on_action_3D_triggered();
 
     void on_Undo_clicked();
     void on_Redo_clicked();
     void on_undo_triggered();
     void on_redo_triggered();
-    void on_Delete_clicked();
-    void on_deleteZone_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -21,5 +21,6 @@
         <file>src/Main.png</file>
         <file>src/deleteZone.png</file>
         <file>src/choose.png</file>
+        <file>src/3d.png</file>
     </qresource>
 </RCC>
