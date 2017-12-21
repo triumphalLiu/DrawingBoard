@@ -84,7 +84,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionCheck_triggered()
 {
-    ui->openGLWidget->debugPoints();
+    //ui->openGLWidget->debugPoints();
 }
 
 void MainWindow::on_drawPoint_triggered()

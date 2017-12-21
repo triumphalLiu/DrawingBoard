@@ -2,7 +2,6 @@
 #define OPENGLWINDOW_H
 
 #include <QColor>
-#include <QDebug>
 #include <QGLWidget>
 #include <QKeyEvent>
 #include <QOpenGLWidget>
@@ -64,22 +63,6 @@ private:
 public:
     OpenGLWindow(QWidget *parent = 0);
     ~OpenGLWindow();
-
-    void debugPoints() //debug专用 输出画布上所有的点
-    {
-        qDebug() << "------------------Debug Begins!";
-        qDebug() << currentID << isChoosingPoints << isNewChosen;
-        qDebug() << "--this is points";
-        for(std::vector<Entity*>::iterator ite = points.begin(); ite != points.end(); ite++)
-            qDebug() << (*ite)->x << (*ite)->y << (*ite)->color[0] << (*ite)->color[1] << (*ite)->color[2] << (*ite)->size << (*ite)->pid << (*ite)->chosen;
-        qDebug() << "--this is ChosenPoints";
-        for(std::vector<Entity*>::iterator ite = chosenPoints.begin(); ite != chosenPoints.end(); ite++)
-            qDebug() << (*ite)->x << (*ite)->y << (*ite)->color[0] << (*ite)->color[1] << (*ite)->color[2] << (*ite)->size << (*ite)->pid << (*ite)->chosen;
-        qDebug() << "--this is TrashPoints";
-        for(std::vector<Entity*>::iterator ite = trashPoints.begin(); ite != trashPoints.end(); ite++)
-            qDebug() << (*ite)->x << (*ite)->y << (*ite)->color[0] << (*ite)->color[1] << (*ite)->color[2] << (*ite)->size << (*ite)->pid << (*ite)->chosen;
-        qDebug() << "------------------Debug End!";
-    }
 
     void cleanTempPoints(){//清空tempPoints
         while(!tempPoints.empty()) {tempPoints.pop_back();}
