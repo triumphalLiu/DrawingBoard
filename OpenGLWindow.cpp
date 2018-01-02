@@ -94,6 +94,8 @@ void OpenGLWindow::mousePressEvent(QMouseEvent *event)
         else if(event->button() == Qt::LeftButton)
         {
             cleanTrashPoints();
+            if(currentMode >= 0 && currentMode <= 10)
+                chooseCancel();
             isLeftButtonPressed = true;
         }
         else if(event->button() == Qt::RightButton)
